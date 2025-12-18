@@ -3,19 +3,24 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "quota_plans")
 public class QuotaPlan {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name; // matches repository method
+    @Column(unique = true, nullable = false)
+    private String planName;
+
+    private Integer dailyLimit;
 
     private String description;
 
-    private boolean active;
+    private Boolean active = true;
 
-    // Getters and setters
+    // getters and setters
+
     public Long getId() {
         return id;
     }
@@ -24,12 +29,20 @@ public class QuotaPlan {
         this.id = id;
     }
 
-    public String getName() {   // getter for 'name'
-        return name;
+    public String getPlanName() {
+        return planName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPlanName(String planName) {
+        this.planName = planName;
+    }
+
+    public Integer getDailyLimit() {
+        return dailyLimit;
+    }
+
+    public void setDailyLimit(Integer dailyLimit) {
+        this.dailyLimit = dailyLimit;
     }
 
     public String getDescription() {
@@ -40,11 +53,11 @@ public class QuotaPlan {
         this.description = description;
     }
 
-    public boolean isActive() {
+    public Boolean getActive() {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         this.active = active;
     }
 }
