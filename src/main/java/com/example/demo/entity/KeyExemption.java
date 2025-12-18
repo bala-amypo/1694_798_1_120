@@ -1,23 +1,29 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 public class KeyExemption {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private ApiKey apiKey;
-
-    private String reason;
+    private boolean unlimitedAccess;
+    private int temporaryExtensionLimit;
+    private LocalDateTime validUntil;
 
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-    public ApiKey getApiKey() { return apiKey; }
-    public void setApiKey(ApiKey apiKey) { this.apiKey = apiKey; }
-    public String getReason() { return reason; }
-    public void setReason(String reason) { this.reason = reason; }
+
+    public boolean getUnlimitedAccess() { return unlimitedAccess; }
+    public void setUnlimitedAccess(boolean unlimitedAccess) { this.unlimitedAccess = unlimitedAccess; }
+
+    public int getTemporaryExtensionLimit() { return temporaryExtensionLimit; }
+    public void setTemporaryExtensionLimit(int temporaryExtensionLimit) { this.temporaryExtensionLimit = temporaryExtensionLimit; }
+
+    public LocalDateTime getValidUntil() { return validUntil; }
+    public void setValidUntil(LocalDateTime validUntil) { this.validUntil = validUntil; }
 }
