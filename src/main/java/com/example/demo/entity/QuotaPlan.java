@@ -9,24 +9,42 @@ public class QuotaPlan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String planName;   // <-- This field must exist
+
     private String description;
-    private int dailyLimit;
+
     private boolean active;
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Getters and setters
+    public Long getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getDescription() { return description; }  // fixes getDescription()
-    public void setDescription(String description) { this.description = description; }
+    public String getPlanName() {
+        return planName;
+    }
 
-    public int getDailyLimit() { return dailyLimit; }
-    public void setDailyLimit(int dailyLimit) { this.dailyLimit = dailyLimit; }
+    public void setPlanName(String planName) {
+        this.planName = planName;
+    }
 
-    public boolean isActive() { return active; }            // fixes isActive()
-    public void setActive(boolean active) { this.active = active; }
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }
