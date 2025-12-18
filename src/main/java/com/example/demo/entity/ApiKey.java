@@ -1,11 +1,10 @@
-package com.example.demo.model;
+package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 public class ApiKey {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,35 +12,18 @@ public class ApiKey {
     @Column(unique = true, nullable = false)
     private String keyValue;
 
-    private Long ownerId;
-
     @ManyToOne
-    private QuotaPlan plan;
+    private QuotaPlan quotaPlan;
 
-    private Boolean active = true;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    private Instant createdAt = Instant.now();
-    private Instant updatedAt = Instant.now();
-
-    // Getters and setters
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
     public String getKeyValue() { return keyValue; }
     public void setKeyValue(String keyValue) { this.keyValue = keyValue; }
-
-    public Long getOwnerId() { return ownerId; }
-    public void setOwnerId(Long ownerId) { this.ownerId = ownerId; }
-
-    public QuotaPlan getPlan() { return plan; }
-    public void setPlan(QuotaPlan plan) { this.plan = plan; }
-
-    public Boolean getActive() { return active; }
-    public void setActive(Boolean active) { this.active = active; }
-
-    public Instant getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
-
-    public Instant getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+    public QuotaPlan getQuotaPlan() { return quotaPlan; }
+    public void setQuotaPlan(QuotaPlan quotaPlan) { this.quotaPlan = quotaPlan; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

@@ -1,42 +1,25 @@
-package com.example.demo.entity;
+package com.example.demo.controller;
 
-import jakarta.persistence.*;
-import java.time.Instant;
+import com.example.demo.entity.KeyExemption;
+import org.springframework.web.bind.annotation.*;
 
-@Entity
+import java.util.ArrayList;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/exemptions")
 public class KeyExemptionController {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private final List<KeyExemption> exemptions = new ArrayList<>();
 
-    @ManyToOne
-    private ApiKey apiKey;
+    @GetMapping
+    public List<KeyExemption> getAllExemptions() {
+        return exemptions;
+    }
 
-    private String notes;
-
-    private Boolean unlimitedAccess = false;
-
-    private Integer temporaryExtensionLimit = 0;
-
-    private Instant validUntil;
-
-    // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public ApiKey getApiKey() { return apiKey; }
-    public void setApiKey(ApiKey apiKey) { this.apiKey = apiKey; }
-
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
-
-    public Boolean getUnlimitedAccess() { return unlimitedAccess; }
-    public void setUnlimitedAccess(Boolean unlimitedAccess) { this.unlimitedAccess = unlimitedAccess; }
-
-    public Integer getTemporaryExtensionLimit() { return temporaryExtensionLimit; }
-    public void setTemporaryExtensionLimit(Integer temporaryExtensionLimit) { this.temporaryExtensionLimit = temporaryExtensionLimit; }
-
-    public Instant getValidUntil() { return validUntil; }
-    public void setValidUntil(Instant validUntil) { this.validUntil = validUntil; }
+    @PostMapping
+    public KeyExemption addExemption(@RequestBody KeyExemption exemption) {
+        exemptions.add(exemption);
+        return exemption;
+    }
 }

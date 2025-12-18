@@ -2,40 +2,35 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.ApiUsageLog;
 import com.example.demo.service.ApiUsageLogService;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/usage-logs")
-@Tag(name = "API Usage Logs", description = "Log and view API usage")
+@RequestMapping("/api/usage")
 public class ApiUsageLogController {
 
-    private final ApiUsageLogService usageLogService;
+    @Autowired
+    private ApiUsageLogService apiUsageLogService;
 
-    public ApiUsageLogController(ApiUsageLogService usageLogService) {
-        this.usageLogService = usageLogService;
+    @GetMapping
+    public List<ApiUsageLog> getAllLogs() {
+        return apiUsageLogService.getAllLogs();
+    }
+
+    @GetMapping("/{id}")
+    public ApiUsageLog getLog(@PathVariable Long id) {
+        return apiUsageLogService.getLogById(id);
     }
 
     @PostMapping
-    public ResponseEntity<ApiUsageLog> logUsage(@RequestBody ApiUsageLog log) {
-        return ResponseEntity.ok(usageLogService.logUsage(log));
+    public ApiUsageLog createLog(@RequestBody ApiUsageLog log) {
+        return apiUsageLogService.createLog(log);
     }
 
-    @GetMapping("/key/{keyId}")
-    public ResponseEntity<List<ApiUsageLog>> getUsageForKey(@PathVariable Long keyId) {
-        return ResponseEntity.ok(usageLogService.getUsageForApiKey(keyId));
-    }
-
-    @GetMapping("/key/{keyId}/today")
-    public ResponseEntity<List<ApiUsageLog>> getTodayUsage(@PathVariable Long keyId) {
-        return ResponseEntity.ok(usageLogService.getUsageForToday(keyId));
-    }
-
-    @GetMapping("/key/{keyId}/count-today")
-    public ResponseEntity<Long> countRequestsToday(@PathVariable Long keyId) {
-        return ResponseEntity.ok(usageLogService.countRequestsToday(keyId));
+    @DeleteMapping("/{id}")
+    public void deleteLog(@PathVariable Long id) {
+        apiUsageLogService.deleteLog(id);
     }
 }

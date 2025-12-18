@@ -1,37 +1,23 @@
-package com.example.demo.model;
+package com.example.demo.entity;
 
 import jakarta.persistence.*;
 
 @Entity
 public class QuotaPlan {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String planName;
-
     @Column(nullable = false)
-    private Integer dailyLimit;
+    private String name;
 
-    private String description;
+    private int dailyLimit;
 
-    private Boolean active = true;
-
-    // Getters and setters
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
-    public String getPlanName() { return planName; }
-    public void setPlanName(String planName) { this.planName = planName; }
-
-    public Integer getDailyLimit() { return dailyLimit; }
-    public void setDailyLimit(Integer dailyLimit) { this.dailyLimit = dailyLimit; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public Boolean getActive() { return active; }
-    public void setActive(Boolean active) { this.active = active; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public int getDailyLimit() { return dailyLimit; }
+    public void setDailyLimit(int dailyLimit) { this.dailyLimit = dailyLimit; }
 }

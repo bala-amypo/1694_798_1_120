@@ -1,39 +1,27 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.AuthRequestDto;
-import com.example.demo.dto.RegisterRequestDto;
-import com.example.demo.dto.AuthResponseDto;
-import com.example.demo.service.AuthService;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
+import com.example.demo.entity.UserAccount;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
-@RequestMapping("/auth")
-@Tag(name = "Authentication", description = "Register and login users with JWT")
+@RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthService authService;
+    private final List<UserAccount> users = new ArrayList<>();
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
-
-    /**
-     * Register a new user account.
-     */
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequestDto request) {
-        authService.register(request);
-        return ResponseEntity.ok("User registered successfully");
+    public UserAccount register(@RequestBody UserAccount user) {
+        users.add(user);
+        return user;
     }
 
-    /**
-     * Login and get JWT token.
-     */
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody AuthRequestDto request) {
-        AuthResponseDto response = authService.login(request);
-        return ResponseEntity.ok(response);
+    public String login(@RequestBody UserAccount user) {
+        return users.stream()
+                .anyMatch(u -> u.getUsername().equals(user.getUsername()) && u.getPassword().equals(user.getPassword()))
+                ? "Login successful" : "Invalid credentials";
     }
 }
