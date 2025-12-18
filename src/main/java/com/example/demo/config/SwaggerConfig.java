@@ -15,7 +15,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .servers(List.of(
                         // Correct format: hostname + port (optional)
-                        new Server().url("https://vs.amypo.ai:9005")
+                        new Server().url("https://9105.408procr.amypo.ai")
                 ));
     }
 }
