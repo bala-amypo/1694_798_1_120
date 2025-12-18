@@ -2,8 +2,10 @@ package com.example.demo.repository;
 
 import com.example.demo.entity.UserAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserAccountRepository extends JpaRepository<UserAccount, Long> {
-
-    UserAccount findByEmail(String email);
+    // Spring Data JPA automatically implements this based on method name
+    UserAccount findByUsername(String username);
 }
