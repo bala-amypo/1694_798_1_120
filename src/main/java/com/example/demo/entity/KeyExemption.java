@@ -1,28 +1,29 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
+@Table(name = "key_exemptions")
 public class KeyExemption {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 🔴 Required by repository
     @ManyToOne
-    @JoinColumn(name = "api_key_id", nullable = false)
+    @JoinColumn(name = "api_key_id")
     private ApiKey apiKey;
 
-    // 🔴 REQUIRED BY SERVICE METHODS
-    private boolean unlimitedAccess;
+    private String notes;
+
+    private Boolean unlimitedAccess = false;
 
     private Integer temporaryExtensionLimit;
 
-    private LocalDateTime validUntil;
+    private Instant validUntil;
 
-    // -------- getters & setters --------
+    // getters and setters
 
     public Long getId() {
         return id;
@@ -40,16 +41,22 @@ public class KeyExemption {
         this.apiKey = apiKey;
     }
 
-    // 🔴 FIXES getUnlimitedAccess()
-    public boolean getUnlimitedAccess() {
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public Boolean getUnlimitedAccess() {
         return unlimitedAccess;
     }
 
-    public void setUnlimitedAccess(boolean unlimitedAccess) {
+    public void setUnlimitedAccess(Boolean unlimitedAccess) {
         this.unlimitedAccess = unlimitedAccess;
     }
 
-    // 🔴 FIXES getTemporaryExtensionLimit()
     public Integer getTemporaryExtensionLimit() {
         return temporaryExtensionLimit;
     }
@@ -58,12 +65,11 @@ public class KeyExemption {
         this.temporaryExtensionLimit = temporaryExtensionLimit;
     }
 
-    // 🔴 FIXES getValidUntil()
-    public LocalDateTime getValidUntil() {
+    public Instant getValidUntil() {
         return validUntil;
     }
 
-    public void setValidUntil(LocalDateTime validUntil) {
+    public void setValidUntil(Instant validUntil) {
         this.validUntil = validUntil;
     }
 }

@@ -1,34 +1,39 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.util.Set;
 
 @Entity
+@Table(name = "user_accounts")
 public class UserAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username; // needed for AuthController
+    @Column(unique = true, nullable = false)
     private String email;
-    private String password;
-    private String role;     // needed for AuthServiceImpl
 
-    // Getters and Setters
+    private String password;
+
+    private String role;
+
+    @ManyToMany
+    @JoinTable(
+        name = "user_quota_plans",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "plan_id")
+    )
+    private Set<QuotaPlan> quotaPlans;
+
+    // getters and setters
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getEmail() {
@@ -54,4 +59,12 @@ public class UserAccount {
     public void setRole(String role) {
         this.role = role;
     }
-} // <- make sure this closing brace exists
+
+    public Set<QuotaPlan> getQuotaPlans() {
+        return quotaPlans;
+    }
+
+    public void setQuotaPlans(Set<QuotaPlan> quotaPlans) {
+        this.quotaPlans = quotaPlans;
+    }
+}
