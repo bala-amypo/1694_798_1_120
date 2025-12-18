@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
-public class KeyExemption {
+public class KeyExemptionController {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
