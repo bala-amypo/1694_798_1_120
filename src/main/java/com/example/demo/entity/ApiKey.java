@@ -1,24 +1,32 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.time.Instant;
 
 @Entity
+@Table(name = "api_keys")
 public class ApiKey {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String keyValue;
 
-    private boolean active;
+    private Long ownerId;
 
-    // 🔴 REQUIRED BY ApiKeyServiceImpl.getPlan()
     @ManyToOne
-    @JoinColumn(name = "quota_plan_id")
+    @JoinColumn(name = "plan_id")
     private QuotaPlan plan;
 
-    // -------- getters & setters --------
+    private Boolean active = true;
+
+    private Instant createdAt = Instant.now();
+
+    private Instant updatedAt = Instant.now();
+
+    // getters and setters
 
     public Long getId() {
         return id;
@@ -36,20 +44,43 @@ public class ApiKey {
         this.keyValue = keyValue;
     }
 
-    public boolean isActive() {
-        return active;
+    public Long getOwnerId() {
+        return ownerId;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
     }
 
-    // 🔴 THIS FIXES getPlan()
     public QuotaPlan getPlan() {
         return plan;
     }
 
     public void setPlan(QuotaPlan plan) {
         this.plan = plan;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
