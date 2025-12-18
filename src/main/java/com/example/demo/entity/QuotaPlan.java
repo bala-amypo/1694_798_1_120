@@ -9,7 +9,7 @@ public class QuotaPlan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String planName;   // <-- This field must exist
+    private String name; // <-- matches getName() in your service
 
     private String description;
 
@@ -24,12 +24,12 @@ public class QuotaPlan {
         this.id = id;
     }
 
-    public String getPlanName() {
-        return planName;
+    public String getName() {   // <-- this getter is required
+        return name;
     }
 
-    public void setPlanName(String planName) {
-        this.planName = planName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
