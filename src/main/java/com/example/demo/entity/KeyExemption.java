@@ -1,7 +1,6 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 public class KeyExemption {
@@ -10,25 +9,36 @@ public class KeyExemption {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private boolean unlimitedAccess;
-    private int temporaryExtensionLimit;
-    private LocalDateTime validUntil;
+    // 🔴 THIS FIELD WAS MISSING
+    @ManyToOne
+    @JoinColumn(name = "api_key_id", nullable = false)
+    private ApiKey apiKey;
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    private boolean exempted;
 
-    public boolean getUnlimitedAccess() { return unlimitedAccess; }
-    public void setUnlimitedAccess(boolean unlimitedAccess) { this.unlimitedAccess = unlimitedAccess; }
+    // -------- getters & setters --------
 
-    public int getTemporaryExtensionLimit() { return temporaryExtensionLimit; }
-    public void setTemporaryExtensionLimit(int temporaryExtensionLimit) { this.temporaryExtensionLimit = temporaryExtensionLimit; }
+    public Long getId() {
+        return id;
+    }
 
-    public LocalDateTime getValidUntil() { return validUntil; }
-    public void setValidUntil(LocalDateTime validUntil) { this.validUntil = validUntil; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    // Additional helpers for service logic
-    public boolean isExpired() {
-        return validUntil != null && validUntil.isBefore(LocalDateTime.now());
+    public ApiKey getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(ApiKey apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    public boolean isExempted() {
+        return exempted;
+    }
+
+    public void setExempted(boolean exempted) {
+        this.exempted = exempted;
     }
 }

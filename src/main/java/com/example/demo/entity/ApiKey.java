@@ -2,8 +2,6 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
-
 @Entity
 public class ApiKey {
 
@@ -13,30 +11,30 @@ public class ApiKey {
 
     private String keyValue;
 
-    @ManyToOne
-    private QuotaPlan plan;
-
     private boolean active;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    // getters & setters
+    public Long getId() {
+        return id;
+    }
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getKeyValue() { return keyValue; }
-    public void setKeyValue(String keyValue) { this.keyValue = keyValue; }
+    public String getKeyValue() {
+        return keyValue;
+    }
 
-    public QuotaPlan getPlan() { return plan; }       // fixes getPlan()
-    public void setPlan(QuotaPlan plan) { this.plan = plan; }
+    public void setKeyValue(String keyValue) {
+        this.keyValue = keyValue;
+    }
 
-    public boolean isActive() { return active; }     // fixes isActive()
-    public void setActive(boolean active) { this.active = active; }
+    public boolean isActive() {
+        return active;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }
