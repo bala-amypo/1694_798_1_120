@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface QuotaPlanRepository extends JpaRepository<QuotaPlan, Long> {
 
-    // Make sure this matches the entity field exactly
-    QuotaPlan findByPlanName(String planName);
+    // Update method name to match entity field
+    QuotaPlan findByName(String name);  // <-- 'name' matches QuotaPlan.name
 }

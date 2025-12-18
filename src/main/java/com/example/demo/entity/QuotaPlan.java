@@ -9,7 +9,7 @@ public class QuotaPlan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name; // <-- matches getName() in your service
+    private String name; // matches repository method
 
     private String description;
 
@@ -24,7 +24,7 @@ public class QuotaPlan {
         this.id = id;
     }
 
-    public String getName() {   // <-- this getter is required
+    public String getName() {   // getter for 'name'
         return name;
     }
 
