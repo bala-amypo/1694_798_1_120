@@ -13,7 +13,13 @@ public class ApiKey {
 
     private boolean active;
 
-    // getters & setters
+    // 🔴 REQUIRED BY ApiKeyServiceImpl.getPlan()
+    @ManyToOne
+    @JoinColumn(name = "quota_plan_id")
+    private QuotaPlan plan;
+
+    // -------- getters & setters --------
+
     public Long getId() {
         return id;
     }
@@ -36,5 +42,14 @@ public class ApiKey {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    // 🔴 THIS FIXES getPlan()
+    public QuotaPlan getPlan() {
+        return plan;
+    }
+
+    public void setPlan(QuotaPlan plan) {
+        this.plan = plan;
     }
 }
