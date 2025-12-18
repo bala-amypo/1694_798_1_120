@@ -1,43 +1,41 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
 import java.util.Date;
+import java.util.Map;
 
 @Component
 public class JwtUtil {
 
-    private static final long EXPIRATION = 1000 * 60 * 60 * 10; // 10 hours
-    private static final Key KEY =
-            Keys.hmacShaKeyFor("mysecretkeymysecretkeymysecretkey".getBytes());
+    private final String SECRET_KEY = "secret123";
+    private final long EXPIRATION = 1000 * 60 * 60 * 10; // 10 hours
 
-    public String generateToken(String username) {
-        return Jwts.builder()
-                .subject(username)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(KEY)
-                .compact();
+    public String getUsername(String token) {
+        return getClaims(token).getSubject();
     }
 
-    public String extractUsername(String token) {
+    public Claims getClaims(String token) {
         return Jwts.parser()
-                .verifyWith(KEY)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody();
     }
 
-    public boolean isTokenValid(String token) {
-        try {
-            extractUsername(token);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    public boolean isTokenValid(String token, String username) {
+        return getUsername(token).equals(username);
+    }
+
+    public String generateToken(Map<String, Object> claims, String subject) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .compact();
     }
 }
