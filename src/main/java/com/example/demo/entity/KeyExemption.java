@@ -26,4 +26,9 @@ public class KeyExemption {
 
     public LocalDateTime getValidUntil() { return validUntil; }
     public void setValidUntil(LocalDateTime validUntil) { this.validUntil = validUntil; }
+
+    // Additional helpers for service logic
+    public boolean isExpired() {
+        return validUntil != null && validUntil.isBefore(LocalDateTime.now());
+    }
 }
