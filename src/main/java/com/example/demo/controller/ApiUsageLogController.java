@@ -2,35 +2,39 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.ApiUsageLog;
 import com.example.demo.service.ApiUsageLogService;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/usage")
+@RequestMapping("/api/usage-logs")
+@Tag(name = "Usage Logs")
 public class ApiUsageLogController {
 
-    @Autowired
-    private ApiUsageLogService apiUsageLogService;
+    private final ApiUsageLogService service;
 
-    @GetMapping
-    public List<ApiUsageLog> getAllLogs() {
-        return apiUsageLogService.getAllLogs();
-    }
-
-    @GetMapping("/{id}")
-    public ApiUsageLog getLog(@PathVariable Long id) {
-        return apiUsageLogService.getLogById(id);
+    public ApiUsageLogController(ApiUsageLogService service) {
+        this.service = service;
     }
 
     @PostMapping
-    public ApiUsageLog createLog(@RequestBody ApiUsageLog log) {
-        return apiUsageLogService.createLog(log);
+    public ApiUsageLog log(@RequestBody ApiUsageLog log) {
+        return service.logUsage(log);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteLog(@PathVariable Long id) {
-        apiUsageLogService.deleteLog(id);
+    @GetMapping("/key/{keyId}")
+    public List<ApiUsageLog> getForKey(@PathVariable Long keyId) {
+        return service.getUsageForApiKey(keyId);
+    }
+
+    @GetMapping("/key/{keyId}/today")
+    public List<ApiUsageLog> getToday(@PathVariable Long keyId) {
+        return service.getUsageForToday(keyId);
+    }
+
+    @GetMapping("/key/{keyId}/count-today")
+    public long countToday(@PathVariable Long keyId) {
+        return service.countRequestsToday(keyId);
     }
 }

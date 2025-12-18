@@ -1,29 +1,28 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.UserAccount;
-import com.example.demo.service.impl.AuthServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.dto.*;
+import com.example.demo.service.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Authentication")
 public class AuthController {
 
-    @Autowired
-    private AuthServiceImpl authService;
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @PostMapping("/register")
-    public UserAccount register(@RequestBody UserAccount user) {
-        return authService.registerUser(user);
+    public void register(@RequestBody RegisterRequestDto request) {
+        authService.register(request);
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody UserAccount user) {
-        UserAccount u = authService.authenticate(user.getUsername(), user.getPassword());
-        if (u != null) {
-            return "Login successful for user: " + u.getUsername();
-        } else {
-            return "Invalid credentials";
-        }
+    public AuthResponseDto login(@RequestBody AuthRequestDto request) {
+        return authService.login(request);
     }
 }
