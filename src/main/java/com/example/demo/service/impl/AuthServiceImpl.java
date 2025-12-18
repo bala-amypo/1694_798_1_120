@@ -1,63 +1,27 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.*;
 import com.example.demo.entity.UserAccount;
-import com.example.demo.exception.BadRequestException;
 import com.example.demo.repository.UserAccountRepository;
-import com.example.demo.security.JwtUtil;
-import com.example.demo.service.AuthService;
-import org.springframework.security.authentication.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-
 @Service
-public class AuthServiceImpl implements AuthService {
+public class AuthServiceImpl {
 
-    private final UserAccountRepository repo;
-    private final PasswordEncoder encoder;
-    private final AuthenticationManager authManager;
-    private final JwtUtil jwtUtil;
+    @Autowired
+    private UserAccountRepository userRepo;
 
-    public AuthServiceImpl(UserAccountRepository repo,
-                           PasswordEncoder encoder,
-                           AuthenticationManager authManager,
-                           JwtUtil jwtUtil) {
-        this.repo = repo;
-        this.encoder = encoder;
-        this.authManager = authManager;
-        this.jwtUtil = jwtUtil;
+    public UserAccount registerUser(UserAccount user) {
+        // Example: default role as USER
+        user.setRole("USER"); // fixes setRole() error
+        return userRepo.save(user);
     }
 
-    @Override
-    public void register(RegisterRequestDto request) {
-        if (repo.findByEmail(request.getEmail()) != null) {
-            throw new BadRequestException("Email already exists");
+    public UserAccount authenticate(String username, String password) {
+        UserAccount user = userRepo.findByUsername(username);
+        if (user != null && user.getPassword().equals(password)) {
+            return user;
         }
-
-        UserAccount user = new UserAccount();
-        user.setEmail(request.getEmail());
-        user.setPassword(encoder.encode(request.getPassword()));
-        user.setRole(request.getRole());
-
-        repo.save(user);
-    }
-
-    @Override
-    public AuthResponseDto login(AuthRequestDto request) {
-        authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-
-        String token = jwtUtil.generateToken(
-                new HashMap<>(),
-                request.getEmail()
-        );
-
-        return new AuthResponseDto(token);
+        return null;
     }
 }

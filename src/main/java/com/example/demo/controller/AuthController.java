@@ -1,27 +1,29 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.UserAccount;
+import com.example.demo.service.impl.AuthServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
-    private final List<UserAccount> users = new ArrayList<>();
+    @Autowired
+    private AuthServiceImpl authService;
 
     @PostMapping("/register")
     public UserAccount register(@RequestBody UserAccount user) {
-        users.add(user);
-        return user;
+        return authService.registerUser(user);
     }
 
     @PostMapping("/login")
     public String login(@RequestBody UserAccount user) {
-        return users.stream()
-                .anyMatch(u -> u.getUsername().equals(user.getUsername()) && u.getPassword().equals(user.getPassword()))
-                ? "Login successful" : "Invalid credentials";
+        UserAccount u = authService.authenticate(user.getUsername(), user.getPassword());
+        if (u != null) {
+            return "Login successful for user: " + u.getUsername();
+        } else {
+            return "Invalid credentials";
+        }
     }
 }
