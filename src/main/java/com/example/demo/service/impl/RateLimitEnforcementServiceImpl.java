@@ -11,33 +11,42 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class RateLimitEnforcementServiceImpl implements RateLimitEnforcementService {
+public class RateLimitEnforcementServiceImpl
+        implements RateLimitEnforcementService {
 
-    private final RateLimitEnforcementRepository repo;
-    private final ApiKeyRepository keyRepo;
+    private final RateLimitEnforcementRepository repository;
+    private final ApiKeyRepository apiKeyRepository;
 
-    public RateLimitEnforcementServiceImpl(RateLimitEnforcementRepository repo,
-                                           ApiKeyRepository keyRepo) {
-        this.repo = repo;
-        this.keyRepo = keyRepo;
+    public RateLimitEnforcementServiceImpl(
+            RateLimitEnforcementRepository repository,
+            ApiKeyRepository apiKeyRepository) {
+        this.repository = repository;
+        this.apiKeyRepository = apiKeyRepository;
     }
 
     @Override
-    public RateLimitEnforcement createEnforcement(RateLimitEnforcement enforcement) {
-        if (enforcement.getLimitExceededBy() < 1) {
+    public RateLimitEnforcement createEnforcement(
+            RateLimitEnforcement enforcement) {
+
+        if (enforcement.getLimitExceededBy() == null ||
+                enforcement.getLimitExceededBy() < 1) {
             throw new BadRequestException("Limit exceeded must be >= 1");
         }
-        return repo.save(enforcement);
+        return repository.save(enforcement);
     }
 
     @Override
     public List<RateLimitEnforcement> getEnforcementsForKey(Long keyId) {
-        return repo.findByApiKey_Id(keyId);
+        apiKeyRepository.findById(keyId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("API key not found"));
+        return repository.findByApiKey_Id(keyId);
     }
 
     @Override
     public RateLimitEnforcement getEnforcementById(Long id) {
-        return repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Enforcement not found"));
+        return repository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Enforcement not found"));
     }
 }

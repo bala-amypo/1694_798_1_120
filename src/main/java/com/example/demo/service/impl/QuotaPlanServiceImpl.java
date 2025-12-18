@@ -1,50 +1,55 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.QuotaPlan;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.QuotaPlanRepository;
 import com.example.demo.service.QuotaPlanService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class QuotaPlanServiceImpl implements QuotaPlanService {
 
-    @Autowired
-    private QuotaPlanRepository quotaPlanRepository;
+    private final QuotaPlanRepository repository;
+
+    public QuotaPlanServiceImpl(QuotaPlanRepository repository) {
+        this.repository = repository;
+    }
+
+    @Override
+    public QuotaPlan createQuotaPlan(QuotaPlan plan) {
+        if (plan.getDailyLimit() == null || plan.getDailyLimit() <= 0) {
+            throw new BadRequestException("Daily limit must be > 0");
+        }
+        return repository.save(plan);
+    }
+
+    @Override
+    public QuotaPlan updateQuotaPlan(Long id, QuotaPlan plan) {
+        QuotaPlan existing = getQuotaPlanById(id);
+        existing.setDailyLimit(plan.getDailyLimit());
+        existing.setDescription(plan.getDescription());
+        return repository.save(existing);
+    }
+
+    @Override
+    public QuotaPlan getQuotaPlanById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Quota plan not found"));
+    }
 
     @Override
     public List<QuotaPlan> getAllPlans() {
-        return quotaPlanRepository.findAll();
+        return repository.findAll();
     }
 
     @Override
-    public QuotaPlan getPlanById(Long id) {
-        return quotaPlanRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public QuotaPlan createPlan(QuotaPlan plan) {
-        return quotaPlanRepository.save(plan);
-    }
-
-    @Override
-    public QuotaPlan updatePlan(Long id, QuotaPlan plan) {
-        Optional<QuotaPlan> existing = quotaPlanRepository.findById(id);
-        if (existing.isPresent()) {
-            QuotaPlan p = existing.get();
-            p.setName(plan.getName());
-            p.setDescription(plan.getDescription());
-            p.setActive(plan.isActive());
-            return quotaPlanRepository.save(p);
-        }
-        return null;
-    }
-
-    @Override
-    public void deletePlan(Long id) {
-        quotaPlanRepository.deleteById(id);
+    public void deactivateQuotaPlan(Long id) {
+        QuotaPlan plan = getQuotaPlanById(id);
+        plan.setActive(false);
+        repository.save(plan);
     }
 }
