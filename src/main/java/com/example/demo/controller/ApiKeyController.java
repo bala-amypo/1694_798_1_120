@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.ApiKey;
+import com.example.demo.entity.ApiKey;
 import com.example.demo.service.ApiKeyService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.QuotaPlan;
+import com.example.demo.entity.QuotaPlan;
 import com.example.demo.service.QuotaPlanService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
