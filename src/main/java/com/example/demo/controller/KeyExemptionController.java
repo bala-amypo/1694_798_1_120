@@ -1,41 +1,42 @@
-package com.example.demo.controller;
+package com.example.demo.model;
 
-import com.example.demo.model.KeyExemption;
-import com.example.demo.service.KeyExemptionService;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import jakarta.persistence.*;
+import java.time.Instant;
 
-import java.util.List;
+@Entity
+public class KeyExemption {
 
-@RestController
-@RequestMapping("/api/key-exemptions")
-@Tag(name = "Key Exemptions", description = "Manage API key exemptions")
-public class KeyExemptionController {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private final KeyExemptionService exemptionService;
+    @ManyToOne
+    private ApiKey apiKey;
 
-    public KeyExemptionController(KeyExemptionService exemptionService) {
-        this.exemptionService = exemptionService;
-    }
+    private String notes;
 
-    @PostMapping
-    public ResponseEntity<KeyExemption> createExemption(@RequestBody KeyExemption exemption) {
-        return ResponseEntity.ok(exemptionService.createExemption(exemption));
-    }
+    private Boolean unlimitedAccess = false;
 
-    @PutMapping("/{id}")
-    public ResponseEntity<KeyExemption> updateExemption(@PathVariable Long id, @RequestBody KeyExemption exemption) {
-        return ResponseEntity.ok(exemptionService.updateExemption(id, exemption));
-    }
+    private Integer temporaryExtensionLimit = 0;
 
-    @GetMapping("/key/{keyId}")
-    public ResponseEntity<KeyExemption> getExemptionForKey(@PathVariable Long keyId) {
-        return ResponseEntity.ok(exemptionService.getExemptionByKey(keyId));
-    }
+    private Instant validUntil;
 
-    @GetMapping
-    public ResponseEntity<List<KeyExemption>> getAllExemptions() {
-        return ResponseEntity.ok(exemptionService.getAllExemptions());
-    }
+    // Getters and setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public ApiKey getApiKey() { return apiKey; }
+    public void setApiKey(ApiKey apiKey) { this.apiKey = apiKey; }
+
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
+
+    public Boolean getUnlimitedAccess() { return unlimitedAccess; }
+    public void setUnlimitedAccess(Boolean unlimitedAccess) { this.unlimitedAccess = unlimitedAccess; }
+
+    public Integer getTemporaryExtensionLimit() { return temporaryExtensionLimit; }
+    public void setTemporaryExtensionLimit(Integer temporaryExtensionLimit) { this.temporaryExtensionLimit = temporaryExtensionLimit; }
+
+    public Instant getValidUntil() { return validUntil; }
+    public void setValidUntil(Instant validUntil) { this.validUntil = validUntil; }
 }

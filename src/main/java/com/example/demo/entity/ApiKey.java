@@ -1,7 +1,7 @@
-package com.example.demo.entity;
+package com.example.demo.model;
 
 import jakarta.persistence.*;
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @Entity
 public class ApiKey {
@@ -20,61 +20,28 @@ public class ApiKey {
 
     private Boolean active = true;
 
-    private Timestamp createdAt;
+    private Instant createdAt = Instant.now();
+    private Instant updatedAt = Instant.now();
 
-    private Timestamp updatedAt;
+    // Getters and setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    // ===== GETTERS & SETTERS =====
+    public String getKeyValue() { return keyValue; }
+    public void setKeyValue(String keyValue) { this.keyValue = keyValue; }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getOwnerId() { return ownerId; }
+    public void setOwnerId(Long ownerId) { this.ownerId = ownerId; }
 
-    public String getKeyValue() {
-        return keyValue;
-    }
+    public QuotaPlan getPlan() { return plan; }
+    public void setPlan(QuotaPlan plan) { this.plan = plan; }
 
-    public void setKeyValue(String keyValue) {
-        this.keyValue = keyValue;
-    }
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
 
-    public Long getOwnerId() {
-        return ownerId;
-    }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 
-    public void setOwnerId(Long ownerId) {
-        this.ownerId = ownerId;
-    }
-
-    public QuotaPlan getPlan() {
-        return plan;
-    }
-
-    public void setPlan(QuotaPlan plan) {
-        this.plan = plan;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+    public Instant getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
 }

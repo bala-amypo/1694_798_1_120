@@ -1,36 +1,37 @@
-package com.example.demo.controller;
+package com.example.demo.model;
 
-import com.example.demo.model.RateLimitEnforcement;
-import com.example.demo.service.RateLimitEnforcementService;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import jakarta.persistence.*;
+import java.time.Instant;
 
-import java.util.List;
+@Entity
+public class RateLimitEnforcement {
 
-@RestController
-@RequestMapping("/api/enforcements")
-@Tag(name = "Rate Limit Enforcements", description = "Track API rate limit enforcement events")
-public class RateLimitEnforcementController {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private final RateLimitEnforcementService enforcementService;
+    @ManyToOne
+    private ApiKey apiKey;
 
-    public RateLimitEnforcementController(RateLimitEnforcementService enforcementService) {
-        this.enforcementService = enforcementService;
-    }
+    private Instant blockedAt = Instant.now();
 
-    @PostMapping
-    public ResponseEntity<RateLimitEnforcement> createEnforcement(@RequestBody RateLimitEnforcement enforcement) {
-        return ResponseEntity.ok(enforcementService.createEnforcement(enforcement));
-    }
+    private Integer limitExceededBy;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<RateLimitEnforcement> getEnforcementById(@PathVariable Long id) {
-        return ResponseEntity.ok(enforcementService.getEnforcementById(id));
-    }
+    private String message;
 
-    @GetMapping("/key/{keyId}")
-    public ResponseEntity<List<RateLimitEnforcement>> getEnforcementsForKey(@PathVariable Long keyId) {
-        return ResponseEntity.ok(enforcementService.getEnforcementsForKey(keyId));
-    }
+    // Getters and setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public ApiKey getApiKey() { return apiKey; }
+    public void setApiKey(ApiKey apiKey) { this.apiKey = apiKey; }
+
+    public Instant getBlockedAt() { return blockedAt; }
+    public void setBlockedAt(Instant blockedAt) { this.blockedAt = blockedAt; }
+
+    public Integer getLimitExceededBy() { return limitExceededBy; }
+    public void setLimitExceededBy(Integer limitExceededBy) { this.limitExceededBy = limitExceededBy; }
+
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
 }
