@@ -2,14 +2,12 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.ApiUsageLog;
 import com.example.demo.service.ApiUsageLogService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/usage-logs")
-@Tag(name = "Usage Logs")
 public class ApiUsageLogController {
 
     private final ApiUsageLogService service;
@@ -24,7 +22,7 @@ public class ApiUsageLogController {
     }
 
     @GetMapping("/key/{keyId}")
-    public List<ApiUsageLog> getForKey(@PathVariable Long keyId) {
+    public List<ApiUsageLog> getByKey(@PathVariable Long keyId) {
         return service.getUsageForApiKey(keyId);
     }
 
@@ -34,7 +32,7 @@ public class ApiUsageLogController {
     }
 
     @GetMapping("/key/{keyId}/count-today")
-    public long countToday(@PathVariable Long keyId) {
+    public int count(@PathVariable Long keyId) {
         return service.countRequestsToday(keyId);
     }
 }

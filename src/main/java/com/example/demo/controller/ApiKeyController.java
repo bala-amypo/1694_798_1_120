@@ -2,14 +2,12 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.ApiKey;
 import com.example.demo.service.ApiKeyService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/api-keys")
-@Tag(name = "API Keys")
 public class ApiKeyController {
 
     private final ApiKeyService service;
@@ -19,17 +17,17 @@ public class ApiKeyController {
     }
 
     @PostMapping
-    public ApiKey create(@RequestBody ApiKey key) {
-        return service.createApiKey(key);
+    public ApiKey create(@RequestBody ApiKey apiKey) {
+        return service.createApiKey(apiKey);
     }
 
     @PutMapping("/{id}")
-    public ApiKey update(@PathVariable Long id, @RequestBody ApiKey key) {
-        return service.updateApiKey(id, key);
+    public ApiKey update(@PathVariable Long id, @RequestBody ApiKey apiKey) {
+        return service.updateApiKey(id, apiKey);
     }
 
     @GetMapping("/{id}")
-    public ApiKey getById(@PathVariable Long id) {
+    public ApiKey get(@PathVariable Long id) {
         return service.getApiKeyById(id);
     }
 

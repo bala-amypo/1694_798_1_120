@@ -2,14 +2,12 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.QuotaPlan;
 import com.example.demo.service.QuotaPlanService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/quota-plans")
-@Tag(name = "Quota Plans")
 public class QuotaPlanController {
 
     private final QuotaPlanService service;
@@ -29,7 +27,7 @@ public class QuotaPlanController {
     }
 
     @GetMapping("/{id}")
-    public QuotaPlan getById(@PathVariable Long id) {
+    public QuotaPlan get(@PathVariable Long id) {
         return service.getQuotaPlanById(id);
     }
 

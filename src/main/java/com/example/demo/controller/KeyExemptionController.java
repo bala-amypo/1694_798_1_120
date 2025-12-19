@@ -2,14 +2,13 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.KeyExemption;
 import com.example.demo.service.KeyExemptionService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/key-exemptions")
-@Tag(name = "Key Exemptions")
 public class KeyExemptionController {
 
     private final KeyExemptionService service;
@@ -19,17 +18,17 @@ public class KeyExemptionController {
     }
 
     @PostMapping
-    public KeyExemption create(@RequestBody KeyExemption exemption) {
-        return service.createExemption(exemption);
+    public KeyExemption create(@RequestBody KeyExemption e) {
+        return service.createExemption(e);
     }
 
     @PutMapping("/{id}")
-    public KeyExemption update(@PathVariable Long id, @RequestBody KeyExemption exemption) {
-        return service.updateExemption(id, exemption);
+    public KeyExemption update(@PathVariable Long id, @RequestBody KeyExemption e) {
+        return service.updateExemption(id, e);
     }
 
     @GetMapping("/key/{keyId}")
-    public KeyExemption getByKey(@PathVariable Long keyId) {
+    public Optional<KeyExemption> getByKey(@PathVariable Long keyId) {
         return service.getExemptionByKey(keyId);
     }
 
