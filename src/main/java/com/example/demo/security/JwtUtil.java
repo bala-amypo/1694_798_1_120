@@ -3,30 +3,20 @@ package com.example.demo.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.stereotype.Component;
+import io.jsonwebtoken.security.Keys;
 
+import java.security.Key;
 import java.util.Date;
 import java.util.Map;
 
-@Component
 public class JwtUtil {
 
-    private final String SECRET_KEY = "secret123";
-    private final long EXPIRATION = 1000 * 60 * 60 * 10; // 10 hours
+    private final Key key;
+    private final long expirationMillis;
 
-    public String getUsername(String token) {
-        return getClaims(token).getSubject();
-    }
-
-    public Claims getClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    public boolean isTokenValid(String token, String username) {
-        return getUsername(token).equals(username);
+    public JwtUtil(String secret, long expirationMillis) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.expirationMillis = expirationMillis;
     }
 
     public String generateToken(Map<String, Object> claims, String subject) {
@@ -34,8 +24,26 @@ public class JwtUtil {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String getUsername(String token) {
+        return getClaims(token).getSubject();
+    }
+
+    public Claims getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public boolean isTokenValid(String token, String username) {
+        String tokenUsername = getUsername(token);
+        Date expiration = getClaims(token).getExpiration();
+        return tokenUsername.equals(username) && expiration.after(new Date());
     }
 }
