@@ -2,12 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.*;
 import com.example.demo.service.AuthService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-@Tag(name = "Authentication")
 public class AuthController {
 
     private final AuthService authService;
@@ -17,8 +15,8 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public void register(@RequestBody RegisterRequestDto request) {
-        authService.register(request);
+    public AuthResponseDto register(@RequestBody RegisterRequestDto request) {
+        return authService.register(request);
     }
 
     @PostMapping("/login")
