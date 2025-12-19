@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.ApiUsageLog;
+
 import java.util.List;
 
 public interface ApiUsageLogService {
@@ -11,5 +12,5 @@ public interface ApiUsageLogService {
 
     List<ApiUsageLog> getUsageForToday(Long keyId);
 
-    long countRequestsToday(Long keyId);
+    int countRequestsToday(Long keyId);
 }
