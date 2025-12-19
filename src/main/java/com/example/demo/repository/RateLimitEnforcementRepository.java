@@ -6,6 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface RateLimitEnforcementRepository extends JpaRepository<RateLimitEnforcement, Long> {
-
     List<RateLimitEnforcement> findByApiKey_Id(Long id);
 }
