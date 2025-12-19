@@ -11,11 +11,12 @@ import java.util.Map;
 
 public class JwtUtil {
 
-    private final Key key;
+    private final Key secretKey;
     private final long expirationMillis;
 
     public JwtUtil(String secret, long expirationMillis) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        // MUST be at least 256 bits (32+ chars)
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
         this.expirationMillis = expirationMillis;
     }
 
@@ -25,7 +26,7 @@ public class JwtUtil {
                 .setSubject(subject)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -35,15 +36,17 @@ public class JwtUtil {
 
     public Claims getClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
 
     public boolean isTokenValid(String token, String username) {
-        String tokenUsername = getUsername(token);
-        Date expiration = getClaims(token).getExpiration();
-        return tokenUsername.equals(username) && expiration.after(new Date());
+        return username.equals(getUsername(token)) && !isTokenExpired(token);
+    }
+
+    private boolean isTokenExpired(String token) {
+        return getClaims(token).getExpiration().before(new Date());
     }
 }
