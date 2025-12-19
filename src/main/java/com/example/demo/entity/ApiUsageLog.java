@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "api_usage_logs")
@@ -12,44 +12,56 @@ public class ApiUsageLog {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "api_key_id")
+    @JoinColumn(name = "api_key_id", nullable = false)
     private ApiKey apiKey;
 
+    @Column(nullable = false)
     private String endpoint;
 
-    private Instant timestamp;
+    @Column(nullable = false)
+    private LocalDateTime timestamp;
 
-    // getters and setters
-
-    public Long getId() {
-        return id;
+    // No-arg constructor
+    public ApiUsageLog() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    // Parameterized constructor
+    public ApiUsageLog(ApiKey apiKey, String endpoint, LocalDateTime timestamp) {
+        this.apiKey = apiKey;
+        this.endpoint = endpoint;
+        this.timestamp = timestamp;
+    }
+
+    // Getters & Setters
+    public Long getId() {
+        return id;
     }
 
     public ApiKey getApiKey() {
         return apiKey;
     }
 
-    public void setApiKey(ApiKey apiKey) {
-        this.apiKey = apiKey;
-    }
-
     public String getEndpoint() {
         return endpoint;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setApiKey(ApiKey apiKey) {
+        this.apiKey = apiKey;
     }
 
     public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
     }
 
-    public Instant getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Instant timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 }

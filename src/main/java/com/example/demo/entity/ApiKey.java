@@ -1,43 +1,70 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "api_keys")
+@Table(
+        name = "api_keys",
+        uniqueConstraints = @UniqueConstraint(columnNames = "keyValue")
+)
 public class ApiKey {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String keyValue;
 
+    @Column(nullable = false)
     private Long ownerId;
 
     @ManyToOne
-    @JoinColumn(name = "plan_id")
+    @JoinColumn(name = "plan_id", nullable = false)
     private QuotaPlan plan;
 
+    @Column(nullable = false)
     private Boolean active = true;
 
-    private Instant createdAt = Instant.now();
+    private LocalDateTime createdAt;
 
-    private Instant updatedAt = Instant.now();
+    private LocalDateTime updatedAt;
 
-    // getters and setters
+    // No-arg constructor
+    public ApiKey() {
+    }
 
+    // Parameterized constructor
+    public ApiKey(String keyValue, Long ownerId, QuotaPlan plan, Boolean active) {
+        this.keyValue = keyValue;
+        this.ownerId = ownerId;
+        this.plan = plan;
+        this.active = active;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
+    // Getters & Setters
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getKeyValue() {
         return keyValue;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setKeyValue(String keyValue) {
@@ -66,21 +93,5 @@ public class ApiKey {
 
     public void setActive(Boolean active) {
         this.active = active;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

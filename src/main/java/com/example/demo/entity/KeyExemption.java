@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "key_exemptions")
@@ -12,64 +12,80 @@ public class KeyExemption {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "api_key_id")
+    @JoinColumn(name = "api_key_id", nullable = false)
     private ApiKey apiKey;
 
     private String notes;
 
+    @Column(nullable = false)
     private Boolean unlimitedAccess = false;
 
     private Integer temporaryExtensionLimit;
 
-    private Instant validUntil;
+    private LocalDateTime validUntil;
 
-    // getters and setters
-
-    public Long getId() {
-        return id;
+    // No-arg constructor
+    public KeyExemption() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    // Parameterized constructor
+    public KeyExemption(ApiKey apiKey, String notes,
+                        Boolean unlimitedAccess,
+                        Integer temporaryExtensionLimit,
+                        LocalDateTime validUntil) {
+        this.apiKey = apiKey;
+        this.notes = notes;
+        this.unlimitedAccess = unlimitedAccess;
+        this.temporaryExtensionLimit = temporaryExtensionLimit;
+        this.validUntil = validUntil;
+    }
+
+    // Getters & Setters
+    public Long getId() {
+        return id;
     }
 
     public ApiKey getApiKey() {
         return apiKey;
     }
 
-    public void setApiKey(ApiKey apiKey) {
-        this.apiKey = apiKey;
-    }
-
     public String getNotes() {
         return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
     }
 
     public Boolean getUnlimitedAccess() {
         return unlimitedAccess;
     }
 
-    public void setUnlimitedAccess(Boolean unlimitedAccess) {
-        this.unlimitedAccess = unlimitedAccess;
-    }
-
     public Integer getTemporaryExtensionLimit() {
         return temporaryExtensionLimit;
+    }
+
+    public LocalDateTime getValidUntil() {
+        return validUntil;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setApiKey(ApiKey apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public void setUnlimitedAccess(Boolean unlimitedAccess) {
+        this.unlimitedAccess = unlimitedAccess;
     }
 
     public void setTemporaryExtensionLimit(Integer temporaryExtensionLimit) {
         this.temporaryExtensionLimit = temporaryExtensionLimit;
     }
 
-    public Instant getValidUntil() {
-        return validUntil;
-    }
-
-    public void setValidUntil(Instant validUntil) {
+    public void setValidUntil(LocalDateTime validUntil) {
         this.validUntil = validUntil;
     }
 }
