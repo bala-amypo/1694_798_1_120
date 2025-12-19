@@ -1,6 +1,8 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.*;
+import com.example.demo.dto.AuthRequestDto;
+import com.example.demo.dto.AuthResponseDto;
+import com.example.demo.dto.RegisterRequestDto;
 import com.example.demo.entity.UserAccount;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
@@ -9,23 +11,27 @@ import com.example.demo.security.JwtUtil;
 import com.example.demo.service.AuthService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
+@Service
 public class AuthServiceImpl implements AuthService {
 
-    private final UserAccountRepository userRepo;
+    private final UserAccountRepository userAccountRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    public AuthServiceImpl(UserAccountRepository userRepo,
-                           PasswordEncoder passwordEncoder,
-                           AuthenticationManager authenticationManager,
-                           JwtUtil jwtUtil) {
-        this.userRepo = userRepo;
+    // 🚨 Constructor injection with correct order per spec:
+    public AuthServiceImpl(
+            UserAccountRepository userAccountRepository,
+            PasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager,
+            JwtUtil jwtUtil
+    ) {
+        this.userAccountRepository = userAccountRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
@@ -34,47 +40,58 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponseDto register(RegisterRequestDto request) {
 
-        if (!Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", request.getEmail())) {
-            throw new BadRequestException("Invalid email");
-        }
+        // validate email uniqueness
+        userAccountRepository.findByEmail(request.getEmail())
+                .ifPresent(u -> {
+                    throw new IllegalArgumentException("Email already exists");
+                });
 
-        if (userRepo.findByEmail(request.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already exists");
-        }
+        // hash password
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         UserAccount user = new UserAccount(
                 request.getEmail(),
-                passwordEncoder.encode(request.getPassword()),
+                encodedPassword,
                 request.getRole()
         );
 
-        userRepo.save(user);
+        user = userAccountRepository.save(user);
 
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", user.getRole());
-        claims.put("userId", user.getId());
+        String token = generateToken(user);
 
-        String token = jwtUtil.generateToken(claims, user.getEmail());
-
-        return new AuthResponseDto(token, user.getId(), user.getEmail(), user.getRole());
+        return new AuthResponseDto(
+                token,
+                user.getId(),
+                user.getEmail(),
+                user.getRole()
+        );
     }
 
     @Override
     public AuthResponseDto login(AuthRequestDto request) {
 
-        UserAccount user = userRepo.findByEmail(request.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        UserAccount user = userAccountRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid email or password"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new BadRequestException("Invalid credentials");
+            throw new BadRequestException("Invalid email or password");
         }
 
+        String token = generateToken(user);
+
+        return new AuthResponseDto(
+                token,
+                user.getId(),
+                user.getEmail(),
+                user.getRole()
+        );
+    }
+
+    private String generateToken(UserAccount user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", user.getRole());
         claims.put("userId", user.getId());
+        claims.put("role", user.getRole());
 
-        String token = jwtUtil.generateToken(claims, user.getEmail());
-
-        return new AuthResponseDto(token, user.getId(), user.getEmail(), user.getRole());
+        return jwtUtil.generateToken(claims, user.getEmail());
     }
 }
