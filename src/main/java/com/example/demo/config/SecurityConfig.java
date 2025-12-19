@@ -1,8 +1,9 @@
-package com.example.demo.security;
+package com.example.demo.config;
 
+import com.example.demo.repository.UserAccountRepository;
+import com.example.demo.security.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,45 +16,25 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    @Bean
+    public JwtUtil jwtUtil() {
+        return new JwtUtil("my-secret-key-my-secret-key", 86400000);
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtUtil jwtUtil) {
+        return new JwtAuthenticationFilter(jwtUtil);
+    }
 
-        http
-            .csrf(csrf -> csrf.disable())
-            .sessionManagement(session ->
-                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
+    @Bean
+    public CustomUserDetailsService customUserDetailsService(
+            UserAccountRepository repository) {
+        return new CustomUserDetailsService(repository);
+    }
 
-                // PUBLIC ENDPOINTS
-                .requestMatchers(
-                        "/auth/**",
-                        "/simple-status",
-                        "/swagger-ui/**",
-                        "/v3/api-docs/**"
-                ).permitAll()
-
-                // ADMIN ONLY
-                .requestMatchers(HttpMethod.POST, "/api/quota-plans/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/quota-plans/**").hasRole("ADMIN")
-
-                // EVERYTHING ELSE NEEDS LOGIN
-                .requestMatchers("/api/**").authenticated()
-
-                .anyRequest().permitAll()
-            );
-
-        http.addFilterBefore(
-                jwtAuthenticationFilter,
-                UsernamePasswordAuthenticationFilter.class
-        );
-
-        return http.build();
+    @Bean
+    public JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint() {
+        return new JwtAuthenticationEntryPoint();
     }
 
     @Bean
@@ -63,7 +44,31 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+            AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           JwtAuthenticationFilter jwtFilter,
+                                           JwtAuthenticationEntryPoint entryPoint)
+            throws Exception {
+
+        http.csrf(csrf -> csrf.disable())
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(entryPoint))
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/auth/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/simple-status"
+                        ).permitAll()
+                        .requestMatchers("/api/**").authenticated()
+                        .anyRequest().authenticated()
+                );
+
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
     }
 }
