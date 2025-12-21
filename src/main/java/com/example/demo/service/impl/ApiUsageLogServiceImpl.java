@@ -6,13 +6,11 @@ import com.example.demo.entity.ApiUsageLog;
 import com.example.demo.repository.ApiKeyRepository;
 import com.example.demo.repository.ApiUsageLogRepository;
 import com.example.demo.service.ApiUsageLogService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,9 +25,7 @@ public class ApiUsageLogServiceImpl implements ApiUsageLogService {
 
     @Override
     public ApiUsageLogDto logUsage(ApiUsageLogDto dto) {
-
-        ApiKey key = apiKeyRepo.findById(dto.getApiKeyId())
-                .orElseThrow();
+        ApiKey key = apiKeyRepo.findById(dto.getApiKeyId()).orElseThrow();
 
         ApiUsageLog log = new ApiUsageLog();
         log.setApiKey(key);
@@ -47,27 +43,17 @@ public class ApiUsageLogServiceImpl implements ApiUsageLogService {
 
     @Override
     public List<ApiUsageLogDto> getUsageForToday(Long apiKeyId) {
-
-        LocalDateTime start = LocalDateTime.now().toLocalDate().atStartOfDay();
-        LocalDateTime end = start.plusDays(1);
-
-        Timestamp s = Timestamp.from(start.atZone(ZoneId.systemDefault()).toInstant());
-        Timestamp e = Timestamp.from(end.atZone(ZoneId.systemDefault()).toInstant());
-
-        return logRepo.findByApiKeyIdAndTimestampBetween(apiKeyId, s, e)
+        Timestamp start = Timestamp.valueOf(LocalDate.now().atStartOfDay());
+        Timestamp end = Timestamp.valueOf(LocalDate.now().plusDays(1).atStartOfDay());
+        return logRepo.findByApiKeyIdAndTimestampBetween(apiKeyId, start, end)
                 .stream().map(this::convert).collect(Collectors.toList());
     }
 
     @Override
     public long countRequestsToday(Long apiKeyId) {
-
-        LocalDateTime start = LocalDateTime.now().toLocalDate().atStartOfDay();
-        LocalDateTime end = start.plusDays(1);
-
-        Timestamp s = Timestamp.from(start.atZone(ZoneId.systemDefault()).toInstant());
-        Timestamp e = Timestamp.from(end.atZone(ZoneId.systemDefault()).toInstant());
-
-        return logRepo.countByApiKeyIdAndTimestampBetween(apiKeyId, s, e);
+        Timestamp start = Timestamp.valueOf(LocalDate.now().atStartOfDay());
+        Timestamp end = Timestamp.valueOf(LocalDate.now().plusDays(1).atStartOfDay());
+        return logRepo.countByApiKeyIdAndTimestampBetween(apiKeyId, start, end);
     }
 
     private ApiUsageLogDto convert(ApiUsageLog log) {

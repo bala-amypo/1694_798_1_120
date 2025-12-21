@@ -26,19 +26,25 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponseDto register(AuthRequestDto dto) {
+
         UserAccount user = new UserAccount();
         user.setEmail(dto.getEmail());
         user.setPassword(encoder.encode(dto.getPassword()));
         user.setRole("USER");
+
         UserAccount saved = repo.save(user);
 
         String token = jwtUtil.generateToken(saved.getEmail());
 
-        return new AuthResponseDto(saved.getEmail(), saved.getRole(), token);
+        return new AuthResponseDto(saved.getId(),
+                saved.getEmail(),
+                saved.getRole(),
+                token);
     }
 
     @Override
     public AuthResponseDto login(AuthRequestDto dto) {
+
         UserAccount user = repo.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -48,6 +54,9 @@ public class AuthServiceImpl implements AuthService {
 
         String token = jwtUtil.generateToken(user.getEmail());
 
-        return new AuthResponseDto(user.getEmail(), user.getRole(), token);
+        return new AuthResponseDto(user.getId(),
+                user.getEmail(),
+                user.getRole(),
+                token);
     }
 }

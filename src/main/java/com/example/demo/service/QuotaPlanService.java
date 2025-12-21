@@ -5,9 +5,11 @@ import java.util.List;
 
 public interface QuotaPlanService {
 
-    QuotaPlanDto createPlan(QuotaPlanDto dto);
+    QuotaPlanDto createQuotaPlan(QuotaPlanDto dto);
 
-    QuotaPlanDto updatePlan(Long id, QuotaPlanDto dto);
+    QuotaPlanDto updateQuotaPlan(Long id, QuotaPlanDto dto);
+
+    QuotaPlanDto getQuotaPlanById(Long id);
 
     List<QuotaPlanDto> getAllPlans();
 

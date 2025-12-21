@@ -5,7 +5,6 @@ import com.example.demo.entity.QuotaPlan;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.QuotaPlanRepository;
 import com.example.demo.service.QuotaPlanService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,29 +18,28 @@ public class QuotaPlanServiceImpl implements QuotaPlanService {
     private QuotaPlanRepository repo;
 
     @Override
-    public QuotaPlanDto createPlan(QuotaPlanDto dto) {
-
-        QuotaPlan plan = new QuotaPlan();
-        plan.setPlanName(dto.getPlanName());
-        plan.setDailyLimit(dto.getDailyLimit());
-        plan.setDescription(dto.getDescription());
-        plan.setActive(true);
-
-        return convert(repo.save(plan));
+    public QuotaPlanDto createQuotaPlan(QuotaPlanDto dto) {
+        QuotaPlan p = new QuotaPlan();
+        p.setPlanName(dto.getPlanName());
+        p.setDailyLimit(dto.getDailyLimit());
+        p.setDescription(dto.getDescription());
+        p.setActive(true);
+        return convert(repo.save(p));
     }
 
     @Override
-    public QuotaPlanDto updatePlan(Long id, QuotaPlanDto dto) {
+    public QuotaPlanDto updateQuotaPlan(Long id, QuotaPlanDto dto) {
+        QuotaPlan p = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Plan not found"));
+        if (dto.getPlanName() != null) p.setPlanName(dto.getPlanName());
+        if (dto.getDailyLimit() != null) p.setDailyLimit(dto.getDailyLimit());
+        if (dto.getDescription() != null) p.setDescription(dto.getDescription());
+        if (dto.getActive() != null) p.setActive(dto.getActive());
+        return convert(repo.save(p));
+    }
 
-        QuotaPlan plan = repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Plan not found"));
-
-        if (dto.getPlanName() != null) plan.setPlanName(dto.getPlanName());
-        if (dto.getDailyLimit() != null) plan.setDailyLimit(dto.getDailyLimit());
-        if (dto.getDescription() != null) plan.setDescription(dto.getDescription());
-        if (dto.getActive() != null) plan.setActive(dto.getActive());
-
-        return convert(repo.save(plan));
+    @Override
+    public QuotaPlanDto getQuotaPlanById(Long id) {
+        return convert(repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Plan not found")));
     }
 
     @Override
@@ -51,19 +49,18 @@ public class QuotaPlanServiceImpl implements QuotaPlanService {
 
     @Override
     public void deactivateQuotaPlan(Long id) {
-        QuotaPlan plan = repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Plan not found"));
-        plan.setActive(false);
-        repo.save(plan);
+        QuotaPlan p = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Plan not found"));
+        p.setActive(false);
+        repo.save(p);
     }
 
-    private QuotaPlanDto convert(QuotaPlan plan) {
+    private QuotaPlanDto convert(QuotaPlan p) {
         QuotaPlanDto dto = new QuotaPlanDto();
-        dto.setId(plan.getId());
-        dto.setPlanName(plan.getPlanName());
-        dto.setDailyLimit(plan.getDailyLimit());
-        dto.setActive(plan.getActive());
-        dto.setDescription(plan.getDescription());
+        dto.setId(p.getId());
+        dto.setPlanName(p.getPlanName());
+        dto.setDailyLimit(p.getDailyLimit());
+        dto.setActive(p.getActive());
+        dto.setDescription(p.getDescription());
         return dto;
     }
 }

@@ -10,7 +10,6 @@ import com.example.demo.service.ApiKeyService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +25,6 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 
     @Override
     public ApiKeyDto createApiKey(ApiKeyDto dto) {
-
         QuotaPlan plan = quotaPlanRepository.findById(dto.getPlanId())
                 .orElseThrow(() -> new ResourceNotFoundException("Plan not found"));
 
@@ -38,52 +36,43 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         key.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         key.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
-        ApiKey saved = apiKeyRepository.save(key);
-
-        return convert(saved);
+        return convert(apiKeyRepository.save(key));
     }
 
     @Override
     public ApiKeyDto updateApiKey(Long id, ApiKeyDto dto) {
-
         ApiKey key = apiKeyRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("API Key not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Key not found"));
 
+        if (dto.getKeyValue() != null) key.setKeyValue(dto.getKeyValue());
+        if (dto.getActive() != null) key.setActive(dto.getActive());
         if (dto.getPlanId() != null) {
             QuotaPlan plan = quotaPlanRepository.findById(dto.getPlanId())
                     .orElseThrow(() -> new ResourceNotFoundException("Plan not found"));
             key.setPlan(plan);
         }
 
-        if (dto.getKeyValue() != null) key.setKeyValue(dto.getKeyValue());
-        if (dto.getActive() != null) key.setActive(dto.getActive());
-
         key.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
-
-        ApiKey saved = apiKeyRepository.save(key);
-
-        return convert(saved);
+        return convert(apiKeyRepository.save(key));
     }
 
     @Override
     public ApiKeyDto getApiKeyById(Long id) {
-        ApiKey key = apiKeyRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("API Key not found"));
-        return convert(key);
+        return convert(apiKeyRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Key not found")));
     }
 
     @Override
     public List<ApiKeyDto> getAllApiKeys() {
         return apiKeyRepository.findAll()
-                .stream()
-                .map(this::convert)
+                .stream().map(this::convert)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void deactivateApiKey(Long id) {
         ApiKey key = apiKeyRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("API Key not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Key not found"));
         key.setActive(false);
         key.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
         apiKeyRepository.save(key);
