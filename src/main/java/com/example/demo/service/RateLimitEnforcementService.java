@@ -5,6 +5,6 @@ import java.util.List;
 
 public interface RateLimitEnforcementService {
     RateLimitEnforcementDto createEnforcement(RateLimitEnforcementDto dto);
-    RateLimitEnforcementDto getEnforcementById(Long id);
-    List<RateLimitEnforcementDto> getEnforcementsForKey(Long keyId);
+    List<RateLimitEnforcementDto> getEnforcementByApiKey(Long apiKeyId);
+    void deleteEnforcement(Long id);
 }

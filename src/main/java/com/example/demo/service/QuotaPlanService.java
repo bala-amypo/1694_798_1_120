@@ -7,6 +7,6 @@ public interface QuotaPlanService {
     QuotaPlanDto createQuotaPlan(QuotaPlanDto dto);
     QuotaPlanDto updateQuotaPlan(Long id, QuotaPlanDto dto);
     QuotaPlanDto getQuotaPlanById(Long id);
-    List<QuotaPlanDto> getAllPlans();
-    void deactivateQuotaPlan(Long id);
+    List<QuotaPlanDto> getAllQuotaPlans();
+    void deleteQuotaPlan(Long id);
 }
