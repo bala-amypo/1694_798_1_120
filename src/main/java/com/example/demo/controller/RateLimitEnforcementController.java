@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.RateLimitEnforcement;
+import com.example.demo.dto.RateLimitEnforcementDto;
 import com.example.demo.service.RateLimitEnforcementService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,24 +12,27 @@ import java.util.List;
 @RequestMapping("/api/enforcements")
 public class RateLimitEnforcementController {
 
-    private final RateLimitEnforcementService service;
+    private final RateLimitEnforcementService enforcementService;
 
-    public RateLimitEnforcementController(RateLimitEnforcementService service) {
-        this.service = service;
+    public RateLimitEnforcementController(RateLimitEnforcementService enforcementService) {
+        this.enforcementService = enforcementService;
     }
 
     @PostMapping
-    public RateLimitEnforcement create(@RequestBody RateLimitEnforcement e) {
-        return service.createEnforcement(e);
+    public ResponseEntity<RateLimitEnforcementDto> createEnforcement(@RequestBody RateLimitEnforcementDto dto) {
+        RateLimitEnforcementDto response = enforcementService.createEnforcement(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
-    public RateLimitEnforcement get(@PathVariable Long id) {
-        return service.getEnforcementById(id);
+    public ResponseEntity<RateLimitEnforcementDto> getEnforcementById(@PathVariable Long id) {
+        RateLimitEnforcementDto response = enforcementService.getEnforcementById(id);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/key/{keyId}")
-    public List<RateLimitEnforcement> getByKey(@PathVariable Long keyId) {
-        return service.getEnforcementsForKey(keyId);
+    public ResponseEntity<List<RateLimitEnforcementDto>> getEnforcementsForKey(@PathVariable Long keyId) {
+        List<RateLimitEnforcementDto> response = enforcementService.getEnforcementsForKey(keyId);
+        return ResponseEntity.ok(response);
     }
 }
