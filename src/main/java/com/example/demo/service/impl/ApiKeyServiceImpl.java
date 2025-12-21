@@ -7,56 +7,85 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.ApiKeyRepository;
 import com.example.demo.repository.QuotaPlanRepository;
 import com.example.demo.service.ApiKeyService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class ApiKeyServiceImpl implements ApiKeyService {
 
-    private final ApiKeyRepository repo;
-    private final QuotaPlanRepository planRepo;
+    @Autowired
+    private ApiKeyRepository apiKeyRepository;
 
-    public ApiKeyServiceImpl(ApiKeyRepository repo, QuotaPlanRepository planRepo) {
-        this.repo = repo;
-        this.planRepo = planRepo;
-    }
+    @Autowired
+    private QuotaPlanRepository quotaPlanRepository;
 
     @Override
-    public ApiKeyDto createApiKey(ApiKeyDto dto) {
-        QuotaPlan plan = planRepo.findById(dto.getPlanId())
+    public ApiKeyDto create(ApiKeyDto dto) {
+
+        QuotaPlan plan = quotaPlanRepository.findById(dto.getPlanId())
                 .orElseThrow(() -> new ResourceNotFoundException("Plan not found"));
 
         ApiKey key = new ApiKey();
         key.setKeyValue(dto.getKeyValue());
         key.setOwnerId(dto.getOwnerId());
         key.setPlan(plan);
-        key.setActive(true);
+        key.setActive(dto.getActive());
         key.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         key.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
-        ApiKey saved = repo.save(key);
+        ApiKey saved = apiKeyRepository.save(key);
 
-        dto.setId(saved.getId());
-        return dto;
+        ApiKeyDto response = new ApiKeyDto();
+        response.setId(saved.getId());
+        response.setKeyValue(saved.getKeyValue());
+        response.setOwnerId(saved.getOwnerId());
+        response.setPlanId(saved.getPlan().getId());
+        response.setActive(saved.getActive());
+        response.setCreatedAt(saved.getCreatedAt());
+        response.setUpdatedAt(saved.getUpdatedAt());
+
+        return response;
     }
 
     @Override
-    public ApiKeyDto updateApiKey(Long id, ApiKeyDto dto) {
-        ApiKey key = repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Key not found"));
+    public ApiKeyDto update(Long id, ApiKeyDto dto) {
 
-        key.setActive(dto.getActive());
+        ApiKey key = apiKeyRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("API Key not found"));
+
+        if (dto.getPlanId() != null) {
+            QuotaPlan plan = quotaPlanRepository.findById(dto.getPlanId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Plan not found"));
+            key.setPlan(plan);
+        }
+
+        if (dto.getKeyValue() != null) key.setKeyValue(dto.getKeyValue());
+        if (dto.getActive() != null) key.setActive(dto.getActive());
+
         key.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
-        repo.save(key);
-        return dto;
+        ApiKey saved = apiKeyRepository.save(key);
+
+        ApiKeyDto response = new ApiKeyDto();
+        response.setId(saved.getId());
+        response.setKeyValue(saved.getKeyValue());
+        response.setOwnerId(saved.getOwnerId());
+        response.setPlanId(saved.getPlan().getId());
+        response.setActive(saved.getActive());
+        response.setCreatedAt(saved.getCreatedAt());
+        response.setUpdatedAt(saved.getUpdatedAt());
+
+        return response;
     }
 
     @Override
-    public ApiKeyDto getApiKeyById(Long id) {
-        ApiKey key = repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Key not found"));
+    public ApiKeyDto getById(Long id) {
+        ApiKey key = apiKeyRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("API Key not found"));
 
         ApiKeyDto dto = new ApiKeyDto();
         dto.setId(key.getId());
@@ -64,34 +93,35 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         dto.setOwnerId(key.getOwnerId());
         dto.setPlanId(key.getPlan().getId());
         dto.setActive(key.getActive());
+        dto.setCreatedAt(key.getCreatedAt());
+        dto.setUpdatedAt(key.getUpdatedAt());
+
         return dto;
     }
 
     @Override
-    public ApiKeyDto getApiKeyByValue(String keyValue) {
-        ApiKey key = repo.findByKeyValue(keyValue)
-                .orElseThrow(() -> new ResourceNotFoundException("Key not found"));
-
-        ApiKeyDto dto = new ApiKeyDto();
-        dto.setId(key.getId());
-        return dto;
+    public List<ApiKeyDto> getAll() {
+        return apiKeyRepository.findAll()
+                .stream()
+                .map(key -> {
+                    ApiKeyDto dto = new ApiKeyDto();
+                    dto.setId(key.getId());
+                    dto.setKeyValue(key.getKeyValue());
+                    dto.setOwnerId(key.getOwnerId());
+                    dto.setPlanId(key.getPlan().getId());
+                    dto.setActive(key.getActive());
+                    dto.setCreatedAt(key.getCreatedAt());
+                    dto.setUpdatedAt(key.getUpdatedAt());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<ApiKeyDto> getAllApiKeys() {
-        return repo.findAll().stream().map(k -> {
-            ApiKeyDto dto = new ApiKeyDto();
-            dto.setId(k.getId());
-            dto.setKeyValue(k.getKeyValue());
-            return dto;
-        }).collect(Collectors.toList());
-    }
+    public void delete(Long id) {
+        ApiKey key = apiKeyRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("API Key not found"));
 
-    @Override
-    public void deactivateApiKey(Long id) {
-        ApiKey key = repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Key not found"));
-        key.setActive(false);
-        repo.save(key);
+        apiKeyRepository.delete(key);
     }
 }
