@@ -1,30 +1,42 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "key_exemption")
+@Table(name = "key_exemptions")
 public class KeyExemption {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "api_key_id", nullable = false)
-    private ApiKey apiKey;
+    private Boolean unlimitedAccess;
+
+    private Integer temporaryExtensionLimit;
+
+    private Timestamp validUntil;
 
     private String notes;
 
-    private Boolean unlimitedAccess = false;
+    @OneToOne
+    @JoinColumn(name = "api_key_id")
+    private ApiKey apiKey;
 
-    @Min(0)
-    private Integer temporaryExtensionLimit;
+    public Long getId() { return id; }
 
-    @Column(nullable = false)
-    private Timestamp validUntil;
+    public Boolean getUnlimitedAccess() { return unlimitedAccess; }
+    public void setUnlimitedAccess(Boolean unlimitedAccess) { this.unlimitedAccess = unlimitedAccess; }
 
-    public KeyExemption() {}
+    public Integer getTemporaryExtensionLimit() { return temporaryExtensionLimit; }
+    public void setTemporaryExtensionLimit(Integer temporaryExtensionLimit) { this.temporaryExtensionLimit = temporaryExtensionLimit; }
+
+    public Timestamp getValidUntil() { return validUntil; }
+    public void setValidUntil(Timestamp validUntil) { this.validUntil = validUntil; }
+
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
+
+    public ApiKey getApiKey() { return apiKey; }
+    public void setApiKey(ApiKey apiKey) { this.apiKey = apiKey; }
 }

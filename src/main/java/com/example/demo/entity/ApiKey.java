@@ -4,31 +4,44 @@ import jakarta.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "api_key")
+@Table(name = "api_keys")
 public class ApiKey {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
     private String keyValue;
 
-    @Column(nullable = false)
     private Long ownerId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "plan_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "plan_id")
     private QuotaPlan plan;
 
-    @Column(nullable = false)
-    private Boolean active = true;
+    private Boolean active;
 
-    @Column(nullable = false)
     private Timestamp createdAt;
 
-    @Column(nullable = false)
     private Timestamp updatedAt;
 
-    public ApiKey() {}
+    public Long getId() { return id; }
+
+    public String getKeyValue() { return keyValue; }
+    public void setKeyValue(String keyValue) { this.keyValue = keyValue; }
+
+    public Long getOwnerId() { return ownerId; }
+    public void setOwnerId(Long ownerId) { this.ownerId = ownerId; }
+
+    public QuotaPlan getPlan() { return plan; }
+    public void setPlan(QuotaPlan plan) { this.plan = plan; }
+
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
+
+    public Timestamp getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+
+    public Timestamp getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Timestamp updatedAt) { this.updatedAt = updatedAt; }
 }

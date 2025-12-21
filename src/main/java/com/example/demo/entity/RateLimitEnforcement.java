@@ -1,30 +1,37 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "rate_limit_enforcement")
+@Table(name = "rate_limit_enforcements")
 public class RateLimitEnforcement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "api_key_id", nullable = false)
-    private ApiKey apiKey;
-
-    @Column(nullable = false)
     private Timestamp blockedAt;
 
-    @Column(nullable = false)
-    @Min(1)
     private Integer limitExceededBy;
 
-    @Column(columnDefinition = "TEXT")
     private String message;
 
-    public RateLimitEnforcement() {}
+    @ManyToOne
+    @JoinColumn(name = "api_key_id")
+    private ApiKey apiKey;
+
+    public Long getId() { return id; }
+
+    public Timestamp getBlockedAt() { return blockedAt; }
+    public void setBlockedAt(Timestamp blockedAt) { this.blockedAt = blockedAt; }
+
+    public Integer getLimitExceededBy() { return limitExceededBy; }
+    public void setLimitExceededBy(Integer limitExceededBy) { this.limitExceededBy = limitExceededBy; }
+
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
+
+    public ApiKey getApiKey() { return apiKey; }
+    public void setApiKey(ApiKey apiKey) { this.apiKey = apiKey; }
 }
