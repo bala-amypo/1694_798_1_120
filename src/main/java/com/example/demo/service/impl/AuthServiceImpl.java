@@ -1,55 +1,53 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.*;
+import com.example.demo.dto.AuthRequestDto;
+import com.example.demo.dto.AuthResponseDto;
 import com.example.demo.entity.UserAccount;
-import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.AuthService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
 public class AuthServiceImpl implements AuthService {
 
-    private final UserAccountRepository userRepo;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    @Autowired
+    private UserAccountRepository repo;
 
-    public AuthServiceImpl(UserAccountRepository userRepo, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
-        this.userRepo = userRepo;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
-    }
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private PasswordEncoder encoder;
 
     @Override
-    public AuthResponseDto register(RegisterRequestDto request) {
-        if (userRepo.findByEmail(request.getEmail()).isPresent()) {
-            throw new BadRequestException("Email already exists");
-        }
-
+    public AuthResponseDto register(AuthRequestDto dto) {
         UserAccount user = new UserAccount();
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(request.getRole());
-
-        UserAccount saved = userRepo.save(user);
+        user.setEmail(dto.getEmail());
+        user.setPassword(encoder.encode(dto.getPassword()));
+        user.setRole("USER");
+        UserAccount saved = repo.save(user);
 
         String token = jwtUtil.generateToken(saved.getEmail());
 
-        return new AuthResponseDto(saved.getId(), saved.getEmail(), token, saved.getRole());
+        return new AuthResponseDto(saved.getEmail(), saved.getRole(), token);
     }
 
     @Override
-    public AuthResponseDto login(AuthRequestDto request) {
-        UserAccount user = userRepo.findByEmail(request.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("Invalid credentials"));
+    public AuthResponseDto login(AuthRequestDto dto) {
+        UserAccount user = repo.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new BadRequestException("Invalid credentials");
+        if (!encoder.matches(dto.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
         }
 
         String token = jwtUtil.generateToken(user.getEmail());
 
-        return new AuthResponseDto(user.getId(), user.getEmail(), token, user.getRole());
+        return new AuthResponseDto(user.getEmail(), user.getRole(), token);
     }
 }

@@ -19,39 +19,42 @@ public class QuotaPlanServiceImpl implements QuotaPlanService {
     private QuotaPlanRepository repo;
 
     @Override
-    public QuotaPlanDto createQuotaPlan(QuotaPlanDto dto) {
+    public QuotaPlanDto createPlan(QuotaPlanDto dto) {
+
         QuotaPlan plan = new QuotaPlan();
         plan.setPlanName(dto.getPlanName());
         plan.setDailyLimit(dto.getDailyLimit());
         plan.setDescription(dto.getDescription());
         plan.setActive(true);
-        QuotaPlan saved = repo.save(plan);
-        return convert(saved);
-    }
 
-    @Override
-    public QuotaPlanDto updateQuotaPlan(Long id, QuotaPlanDto dto) {
-        QuotaPlan plan = repo.findById(id).orElseThrow();
-        if (dto.getPlanName() != null) plan.setPlanName(dto.getPlanName());
-        if (dto.getDailyLimit() != null) plan.setDailyLimit(dto.getDailyLimit());
-        if (dto.getDescription() != null) plan.setDescription(dto.getDescription());
-        if (dto.getActive() != null) plan.setActive(dto.getActive());
         return convert(repo.save(plan));
     }
 
     @Override
-    public QuotaPlanDto getQuotaPlanById(Long id) {
-        return convert(repo.findById(id).orElseThrow());
+    public QuotaPlanDto updatePlan(Long id, QuotaPlanDto dto) {
+
+        QuotaPlan plan = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Plan not found"));
+
+        if (dto.getPlanName() != null) plan.setPlanName(dto.getPlanName());
+        if (dto.getDailyLimit() != null) plan.setDailyLimit(dto.getDailyLimit());
+        if (dto.getDescription() != null) plan.setDescription(dto.getDescription());
+        if (dto.getActive() != null) plan.setActive(dto.getActive());
+
+        return convert(repo.save(plan));
     }
 
     @Override
-    public List<QuotaPlanDto> getAllQuotaPlans() {
+    public List<QuotaPlanDto> getAllPlans() {
         return repo.findAll().stream().map(this::convert).collect(Collectors.toList());
     }
 
     @Override
-    public void deleteQuotaPlan(Long id) {
-        repo.delete(repo.findById(id).orElseThrow());
+    public void deactivateQuotaPlan(Long id) {
+        QuotaPlan plan = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Plan not found"));
+        plan.setActive(false);
+        repo.save(plan);
     }
 
     private QuotaPlanDto convert(QuotaPlan plan) {
@@ -59,8 +62,8 @@ public class QuotaPlanServiceImpl implements QuotaPlanService {
         dto.setId(plan.getId());
         dto.setPlanName(plan.getPlanName());
         dto.setDailyLimit(plan.getDailyLimit());
-        dto.setDescription(plan.getDescription());
         dto.setActive(plan.getActive());
+        dto.setDescription(plan.getDescription());
         return dto;
     }
 }

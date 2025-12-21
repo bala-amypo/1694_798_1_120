@@ -4,8 +4,12 @@ import com.example.demo.dto.ApiUsageLogDto;
 import java.util.List;
 
 public interface ApiUsageLogService {
-    ApiUsageLogDto createApiUsageLog(ApiUsageLogDto dto);
-    List<ApiUsageLogDto> getUsageLogsByApiKey(Long apiKeyId);
-    List<ApiUsageLogDto> getAllUsageLogs();
-    void deleteUsageLog(Long id);
+
+    ApiUsageLogDto logUsage(ApiUsageLogDto dto);
+
+    List<ApiUsageLogDto> getUsageForApiKey(Long apiKeyId);
+
+    List<ApiUsageLogDto> getUsageForToday(Long apiKeyId);
+
+    long countRequestsToday(Long apiKeyId);
 }

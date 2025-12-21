@@ -4,7 +4,8 @@ import com.example.demo.dto.RateLimitEnforcementDto;
 import java.util.List;
 
 public interface RateLimitEnforcementService {
-    RateLimitEnforcementDto createEnforcement(RateLimitEnforcementDto dto);
-    List<RateLimitEnforcementDto> getEnforcementByApiKey(Long apiKeyId);
-    void deleteEnforcement(Long id);
+
+    RateLimitEnforcementDto getEnforcementById(Long id);
+
+    List<RateLimitEnforcementDto> getEnforcementsForKey(Long apiKeyId);
 }

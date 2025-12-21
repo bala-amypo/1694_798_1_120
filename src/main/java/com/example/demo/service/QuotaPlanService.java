@@ -4,9 +4,12 @@ import com.example.demo.dto.QuotaPlanDto;
 import java.util.List;
 
 public interface QuotaPlanService {
-    QuotaPlanDto createQuotaPlan(QuotaPlanDto dto);
-    QuotaPlanDto updateQuotaPlan(Long id, QuotaPlanDto dto);
-    QuotaPlanDto getQuotaPlanById(Long id);
-    List<QuotaPlanDto> getAllQuotaPlans();
-    void deleteQuotaPlan(Long id);
+
+    QuotaPlanDto createPlan(QuotaPlanDto dto);
+
+    QuotaPlanDto updatePlan(Long id, QuotaPlanDto dto);
+
+    List<QuotaPlanDto> getAllPlans();
+
+    void deactivateQuotaPlan(Long id);
 }

@@ -40,7 +40,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 
         ApiKey saved = apiKeyRepository.save(key);
 
-        return convertToDto(saved);
+        return convert(saved);
     }
 
     @Override
@@ -55,33 +55,28 @@ public class ApiKeyServiceImpl implements ApiKeyService {
             key.setPlan(plan);
         }
 
-        if (dto.getKeyValue() != null) {
-            key.setKeyValue(dto.getKeyValue());
-        }
-
-        if (dto.getActive() != null) {
-            key.setActive(dto.getActive());
-        }
+        if (dto.getKeyValue() != null) key.setKeyValue(dto.getKeyValue());
+        if (dto.getActive() != null) key.setActive(dto.getActive());
 
         key.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
         ApiKey saved = apiKeyRepository.save(key);
 
-        return convertToDto(saved);
+        return convert(saved);
     }
 
     @Override
     public ApiKeyDto getApiKeyById(Long id) {
         ApiKey key = apiKeyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("API Key not found"));
-        return convertToDto(key);
+        return convert(key);
     }
 
     @Override
     public List<ApiKeyDto> getAllApiKeys() {
         return apiKeyRepository.findAll()
                 .stream()
-                .map(this::convertToDto)
+                .map(this::convert)
                 .collect(Collectors.toList());
     }
 
@@ -94,7 +89,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         apiKeyRepository.save(key);
     }
 
-    private ApiKeyDto convertToDto(ApiKey key) {
+    private ApiKeyDto convert(ApiKey key) {
         ApiKeyDto dto = new ApiKeyDto();
         dto.setId(key.getId());
         dto.setKeyValue(key.getKeyValue());
