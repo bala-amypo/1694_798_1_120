@@ -3,28 +3,51 @@ package com.example.demo.dto;
 import java.sql.Timestamp;
 
 public class KeyExemptionDto {
+
     private Long id;
     private Long apiKeyId;
-    private Boolean unlimitedAccess;
     private Integer temporaryExtensionLimit;
     private Timestamp validUntil;
-    private String notes;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public KeyExemptionDto() {
+    }
 
-    public Long getApiKeyId() { return apiKeyId; }
-    public void setApiKeyId(Long apiKeyId) { this.apiKeyId = apiKeyId; }
+    public KeyExemptionDto(Long id, Long apiKeyId, Integer temporaryExtensionLimit, Timestamp validUntil) {
+        this.id = id;
+        this.apiKeyId = apiKeyId;
+        this.temporaryExtensionLimit = temporaryExtensionLimit;
+        this.validUntil = validUntil;
+    }
 
-    public Boolean getUnlimitedAccess() { return unlimitedAccess; }
-    public void setUnlimitedAccess(Boolean unlimitedAccess) { this.unlimitedAccess = unlimitedAccess; }
+    public Long getId() {
+        return id;
+    }
 
-    public Integer getTemporaryExtensionLimit() { return temporaryExtensionLimit; }
-    public void setTemporaryExtensionLimit(Integer temporaryExtensionLimit) { this.temporaryExtensionLimit = temporaryExtensionLimit; }
+    public Long getApiKeyId() {
+        return apiKeyId;
+    }
 
-    public Timestamp getValidUntil() { return validUntil; }
-    public void setValidUntil(Timestamp validUntil) { this.validUntil = validUntil; }
+    public Integer getTemporaryExtensionLimit() {
+        return temporaryExtensionLimit;
+    }
 
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
+    public Timestamp getValidUntil() {
+        return validUntil;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setApiKeyId(Long apiKeyId) {
+        this.apiKeyId = apiKeyId;
+    }
+
+    public void setTemporaryExtensionLimit(Integer temporaryExtensionLimit) {
+        this.temporaryExtensionLimit = temporaryExtensionLimit;
+    }
+
+    public void setValidUntil(Timestamp validUntil) {
+        this.validUntil = validUntil;
+    }
 }
