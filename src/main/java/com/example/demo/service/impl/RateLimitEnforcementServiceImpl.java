@@ -3,65 +3,54 @@ package com.example.demo.service.impl;
 import com.example.demo.dto.RateLimitEnforcementDto;
 import com.example.demo.entity.ApiKey;
 import com.example.demo.entity.RateLimitEnforcement;
-import com.example.demo.exception.BadRequestException;
-import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.ApiKeyRepository;
 import com.example.demo.repository.RateLimitEnforcementRepository;
 import com.example.demo.service.RateLimitEnforcementService;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class RateLimitEnforcementServiceImpl implements RateLimitEnforcementService {
 
-    private final RateLimitEnforcementRepository repo;
-    private final ApiKeyRepository keyRepo;
+    @Autowired
+    private RateLimitEnforcementRepository repo;
 
-    public RateLimitEnforcementServiceImpl(RateLimitEnforcementRepository repo, ApiKeyRepository keyRepo) {
-        this.repo = repo;
-        this.keyRepo = keyRepo;
-    }
+    @Autowired
+    private ApiKeyRepository keyRepo;
 
     @Override
     public RateLimitEnforcementDto createEnforcement(RateLimitEnforcementDto dto) {
-        if (dto.getLimitExceededBy() < 1) {
-            throw new BadRequestException("limitExceededBy must be >= 1");
-        }
-
-        ApiKey key = keyRepo.findById(dto.getApiKeyId())
-                .orElseThrow(() -> new ResourceNotFoundException("Key not found"));
-
+        ApiKey key = keyRepo.findById(dto.getApiKeyId()).orElseThrow();
         RateLimitEnforcement e = new RateLimitEnforcement();
         e.setApiKey(key);
-        e.setBlockedAt(dto.getBlockedAt());
+        e.setBlockedAt(new Timestamp(System.currentTimeMillis()));
         e.setLimitExceededBy(dto.getLimitExceededBy());
         e.setMessage(dto.getMessage());
-
-        repo.save(e);
-        dto.setId(e.getId());
-        return dto;
+        return convert(repo.save(e));
     }
 
     @Override
-    public RateLimitEnforcementDto getEnforcementById(Long id) {
-        RateLimitEnforcement e = repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Enforcement not found"));
+    public List<RateLimitEnforcementDto> getEnforcementByApiKey(Long apiKeyId) {
+        return repo.findByApiKeyId(apiKeyId).stream().map(this::convert).collect(Collectors.toList());
+    }
 
+    @Override
+    public void deleteEnforcement(Long id) {
+        repo.delete(repo.findById(id).orElseThrow());
+    }
+
+    private RateLimitEnforcementDto convert(RateLimitEnforcement e) {
         RateLimitEnforcementDto dto = new RateLimitEnforcementDto();
         dto.setId(e.getId());
-        dto.setMessage(e.getMessage());
+        dto.setApiKeyId(e.getApiKey().getId());
+        dto.setBlockedAt(e.getBlockedAt());
         dto.setLimitExceededBy(e.getLimitExceededBy());
+        dto.setMessage(e.getMessage());
         return dto;
-    }
-
-    @Override
-    public List<RateLimitEnforcementDto> getEnforcementsForKey(Long keyId) {
-        return repo.findByApiKey_Id(keyId)
-                .stream()
-                .map(e -> {
-                    RateLimitEnforcementDto dto = new RateLimitEnforcementDto();
-                    dto.setId(e.getId());
-                    return dto;
-                }).collect(Collectors.toList());
     }
 }
