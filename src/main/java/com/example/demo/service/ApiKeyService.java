@@ -5,13 +5,13 @@ import java.util.List;
 
 public interface ApiKeyService {
 
-    ApiKeyDto create(ApiKeyDto dto);
+    ApiKeyDto createApiKey(ApiKeyDto dto);
 
-    ApiKeyDto update(Long id, ApiKeyDto dto);
+    ApiKeyDto updateApiKey(Long id, ApiKeyDto dto);
 
-    ApiKeyDto getById(Long id);
+    ApiKeyDto getApiKeyById(Long id);
 
-    List<ApiKeyDto> getAll();
+    List<ApiKeyDto> getAllApiKeys();
 
-    void delete(Long id);
+    void deactivateApiKey(Long id);
 }
