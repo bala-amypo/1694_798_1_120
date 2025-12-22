@@ -10,6 +10,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+
 @Configuration
 public class SecurityConfig {
 
@@ -27,9 +28,9 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session.disable())
-                .httpBasic(httpBasic -> {})
-                .formLogin(form -> form.disable());
+                .formLogin(form -> form.disable())
+                .httpBasic(http -> http.disable())  // DISABLE BASIC AUTH
+                .sessionManagement(session -> session.disable());
 
         return http.build();
     }
