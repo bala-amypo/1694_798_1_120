@@ -29,7 +29,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable())
-                .httpBasic(http -> http.disable())  // DISABLE BASIC AUTH
+                .httpBasic(basic -> basic.disable())  // <-- FIXED HERE
                 .sessionManagement(session -> session.disable());
 
         return http.build();
