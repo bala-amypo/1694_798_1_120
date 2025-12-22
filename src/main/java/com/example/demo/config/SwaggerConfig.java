@@ -16,5 +16,8 @@ public class SwaggerConfig {
                         .version("1.0.0")
                         .description("Manages API keys, quota plans, usage logs, and rate limits")
                 );
+                .server(List.of(
+                    new Server().url("https://9180.408procr.amypo.ai/")
+                ));
     }
 }
