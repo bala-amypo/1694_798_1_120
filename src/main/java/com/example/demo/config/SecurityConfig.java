@@ -27,7 +27,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session.disable()) 
+                .sessionManagement(session -> session.disable())
                 .httpBasic(httpBasic -> {})
                 .formLogin(form -> form.disable());
 
