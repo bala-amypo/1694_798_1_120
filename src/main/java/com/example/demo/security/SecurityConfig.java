@@ -5,20 +5,28 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 @Configuration
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter) {
+        this.jwtAuthFilter = jwtAuthFilter;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
                 .csrf(csrf -> csrf.disable())
+
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
                         .requestMatchers(
                                 "/auth/**",
                                 "/v3/api-docs/**",
@@ -26,21 +34,27 @@ public class SecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
 
-                        // ADMIN only endpoints
-                        .requestMatchers("/api/quota-plans/**").hasRole("ADMIN")
-                        .requestMatchers("/api/api-keys/**").hasRole("ADMIN")
+                        // ADMIN endpoints
+                        .requestMatchers("/api/quota-plans/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/api-keys/**").hasAuthority("ADMIN")
 
-                        // Authenticated (USER or ADMIN)
+                        // USER + ADMIN
                         .requestMatchers("/api/usage-logs/**").authenticated()
                         .requestMatchers("/api/enforcements/**").authenticated()
                         .requestMatchers("/api/key-exemptions/**").authenticated()
 
-                        // everything else requires login
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form.disable())
+
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
                 .httpBasic(basic -> basic.disable())
-                .sessionManagement(session -> session.disable());
+
+                .formLogin(form -> form.disable());
 
         return http.build();
     }
