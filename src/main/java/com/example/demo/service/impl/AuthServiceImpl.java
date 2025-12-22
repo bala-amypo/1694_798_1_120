@@ -30,7 +30,7 @@ public class AuthServiceImpl implements AuthService {
         UserAccount user = new UserAccount();
         user.setEmail(dto.getEmail());
         user.setPassword(encoder.encode(dto.getPassword()));
-        user.setRole("USER");
+        user.setRole("ADMIN");
 
         UserAccount saved = repo.save(user);
 
