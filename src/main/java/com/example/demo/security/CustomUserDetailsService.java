@@ -1,8 +1,11 @@
 package com.example.demo.security;
 
-import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.entity.UserAccount;
-import org.springframework.security.core.userdetails.*;
+import com.example.demo.repository.UserAccountRepository;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,13 +18,23 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) {
-        UserAccount user = repo.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public UserDetails loadUserByUsername(String email)
+            throws UsernameNotFoundException {
 
-        return User.withUsername(user.getEmail())
+        UserAccount user = repo.findByEmail(email)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found with email: " + email)
+                );
+
+        return User.builder()
+                .username(user.getEmail())
                 .password(user.getPassword())
-                .roles(user.getRole())
+                .authorities(
+                        user.getRoles()
+                                .stream()
+                                .map(role -> "ROLE_" + role)
+                                .toArray(String[]::new)
+                )
                 .build();
     }
 }
