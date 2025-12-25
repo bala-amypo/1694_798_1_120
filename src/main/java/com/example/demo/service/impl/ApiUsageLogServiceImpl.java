@@ -6,6 +6,8 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.ApiKeyRepository;
 import com.example.demo.repository.ApiUsageLogRepository;
 import com.example.demo.service.ApiUsageLogService;
+import org.springframework.stereotype.Service;
+
 
 import java.time.*;
 import java.util.List;

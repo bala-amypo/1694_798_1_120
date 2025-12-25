@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.ApiKey;
+import org.springframework.stereotype.Service;
 import com.example.demo.entity.QuotaPlan;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;

@@ -7,6 +7,7 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.AuthService;
+import org.springframework.stereotype.Service;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;

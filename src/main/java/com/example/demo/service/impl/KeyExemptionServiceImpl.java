@@ -6,6 +6,7 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.ApiKeyRepository;
 import com.example.demo.repository.KeyExemptionRepository;
 import com.example.demo.service.KeyExemptionService;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
