@@ -9,7 +9,7 @@ import com.example.demo.service.ApiUsageLogService;
 
 import java.time.*;
 import java.util.List;
-
+@Service
 public class ApiUsageLogServiceImpl implements ApiUsageLogService {
 
     private final ApiUsageLogRepository repo;

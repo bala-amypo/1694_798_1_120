@@ -12,7 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Map;
-
+@Service
 public class AuthServiceImpl implements AuthService {
 
     private final UserAccountRepository repo;

@@ -9,7 +9,7 @@ import com.example.demo.service.KeyExemptionService;
 
 import java.time.Instant;
 import java.util.List;
-
+@Service
 public class KeyExemptionServiceImpl implements KeyExemptionService {
 
     private final KeyExemptionRepository repo;
