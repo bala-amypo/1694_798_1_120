@@ -11,12 +11,8 @@ public class QuotaPlan {
     private Long id;
 
     private String planName;
-
     private Integer dailyLimit;
-
-    private String description;
-
-    private Boolean active;
+    private boolean active = true;
 
     public Long getId() { return id; }
 
@@ -26,9 +22,6 @@ public class QuotaPlan {
     public Integer getDailyLimit() { return dailyLimit; }
     public void setDailyLimit(Integer dailyLimit) { this.dailyLimit = dailyLimit; }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public Boolean getActive() { return active; }
-    public void setActive(Boolean active) { this.active = active; }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }

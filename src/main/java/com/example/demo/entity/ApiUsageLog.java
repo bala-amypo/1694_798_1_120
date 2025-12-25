@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @Entity
 @Table(name = "api_usage_logs")
@@ -12,11 +12,9 @@ public class ApiUsageLog {
     private Long id;
 
     private String endpoint;
-
-    private Timestamp timestamp;
+    private Instant timestamp;
 
     @ManyToOne
-    @JoinColumn(name = "api_key_id")
     private ApiKey apiKey;
 
     public Long getId() { return id; }
@@ -24,8 +22,8 @@ public class ApiUsageLog {
     public String getEndpoint() { return endpoint; }
     public void setEndpoint(String endpoint) { this.endpoint = endpoint; }
 
-    public Timestamp getTimestamp() { return timestamp; }
-    public void setTimestamp(Timestamp timestamp) { this.timestamp = timestamp; }
+    public Instant getTimestamp() { return timestamp; }
+    public void setTimestamp(Instant timestamp) { this.timestamp = timestamp; }
 
     public ApiKey getApiKey() { return apiKey; }
     public void setApiKey(ApiKey apiKey) { this.apiKey = apiKey; }

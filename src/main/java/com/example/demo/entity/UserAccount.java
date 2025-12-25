@@ -10,10 +10,9 @@ public class UserAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String email;
-
     private String password;
-
     private String role;
 
     public Long getId() { return id; }
