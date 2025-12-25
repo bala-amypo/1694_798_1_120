@@ -1,9 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.RateLimitEnforcementDto;
+import com.example.demo.entity.RateLimitEnforcement;
 import com.example.demo.service.RateLimitEnforcementService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,27 +11,24 @@ import java.util.List;
 @RequestMapping("/api/enforcements")
 public class RateLimitEnforcementController {
 
-    private final RateLimitEnforcementService enforcementService;
+    private final RateLimitEnforcementService service;
 
-    public RateLimitEnforcementController(RateLimitEnforcementService enforcementService) {
-        this.enforcementService = enforcementService;
+    public RateLimitEnforcementController(RateLimitEnforcementService service) {
+        this.service = service;
     }
 
     @PostMapping
-    public ResponseEntity<RateLimitEnforcementDto> createEnforcement(@RequestBody RateLimitEnforcementDto dto) {
-        RateLimitEnforcementDto response = enforcementService.createEnforcement(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public RateLimitEnforcement create(@RequestBody RateLimitEnforcement e) {
+        return service.createEnforcement(e);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RateLimitEnforcementDto> getEnforcementById(@PathVariable Long id) {
-        RateLimitEnforcementDto response = enforcementService.getEnforcementById(id);
-        return ResponseEntity.ok(response);
+    public RateLimitEnforcement getById(@PathVariable Long id) {
+        return service.getEnforcementById(id);
     }
 
     @GetMapping("/key/{keyId}")
-    public ResponseEntity<List<RateLimitEnforcementDto>> getEnforcementsForKey(@PathVariable Long keyId) {
-        List<RateLimitEnforcementDto> response = enforcementService.getEnforcementsForKey(keyId);
-        return ResponseEntity.ok(response);
+    public List<RateLimitEnforcement> getForKey(@PathVariable Long keyId) {
+        return service.getEnforcementsForKey(keyId);
     }
 }
