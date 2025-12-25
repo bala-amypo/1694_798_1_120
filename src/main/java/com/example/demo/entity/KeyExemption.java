@@ -17,7 +17,15 @@ public class KeyExemption {
     @ManyToOne
     private ApiKey apiKey;
 
-    public Long getId() { return id; }
+    public KeyExemption() {}
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {      // ✅ added (safe)
+        this.id = id;
+    }
 
     public Integer getTemporaryExtensionLimit() {
         return temporaryExtensionLimit;
@@ -27,9 +35,19 @@ public class KeyExemption {
         this.temporaryExtensionLimit = temporaryExtensionLimit;
     }
 
-    public Instant getValidUntil() { return validUntil; }
-    public void setValidUntil(Instant validUntil) { this.validUntil = validUntil; }
+    public Instant getValidUntil() {
+        return validUntil;
+    }
 
-    public ApiKey getApiKey() { return apiKey; }
-    public void setApiKey(ApiKey apiKey) { this.apiKey = apiKey; }
+    public void setValidUntil(Instant validUntil) {
+        this.validUntil = validUntil;
+    }
+
+    public ApiKey getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(ApiKey apiKey) {
+        this.apiKey = apiKey;
+    }
 }

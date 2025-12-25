@@ -17,17 +17,45 @@ public class ApiKey {
     @ManyToOne
     private QuotaPlan plan;
 
-    public Long getId() { return id; }
+    public ApiKey() {}
 
-    public String getKeyValue() { return keyValue; }
-    public void setKeyValue(String keyValue) { this.keyValue = keyValue; }
+    public Long getId() {
+        return id;
+    }
 
-    public Long getOwnerId() { return ownerId; }
-    public void setOwnerId(Long ownerId) { this.ownerId = ownerId; }
+    public void setId(Long id) {      // ✅ REQUIRED BY TESTS
+        this.id = id;
+    }
 
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+    public String getKeyValue() {
+        return keyValue;
+    }
 
-    public QuotaPlan getPlan() { return plan; }
-    public void setPlan(QuotaPlan plan) { this.plan = plan; }
+    public void setKeyValue(String keyValue) {
+        this.keyValue = keyValue;
+    }
+
+    public Long getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public QuotaPlan getPlan() {
+        return plan;
+    }
+
+    public void setPlan(QuotaPlan plan) {
+        this.plan = plan;
+    }
 }

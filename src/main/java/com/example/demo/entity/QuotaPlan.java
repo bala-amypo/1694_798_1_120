@@ -14,14 +14,37 @@ public class QuotaPlan {
     private Integer dailyLimit;
     private boolean active = true;
 
-    public Long getId() { return id; }
+    public QuotaPlan() {}
 
-    public String getPlanName() { return planName; }
-    public void setPlanName(String planName) { this.planName = planName; }
+    public Long getId() {
+        return id;
+    }
 
-    public Integer getDailyLimit() { return dailyLimit; }
-    public void setDailyLimit(Integer dailyLimit) { this.dailyLimit = dailyLimit; }
+    public void setId(Long id) {      // ✅ REQUIRED BY TESTS
+        this.id = id;
+    }
 
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+    public String getPlanName() {
+        return planName;
+    }
+
+    public void setPlanName(String planName) {
+        this.planName = planName;
+    }
+
+    public Integer getDailyLimit() {
+        return dailyLimit;
+    }
+
+    public void setDailyLimit(Integer dailyLimit) {
+        this.dailyLimit = dailyLimit;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }

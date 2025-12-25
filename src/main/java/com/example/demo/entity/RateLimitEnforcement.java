@@ -16,16 +16,37 @@ public class RateLimitEnforcement {
     @ManyToOne
     private ApiKey apiKey;
 
-    public Long getId() { return id; }
+    public RateLimitEnforcement() {}
 
-    public Integer getLimitExceededBy() { return limitExceededBy; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {      // ✅ added (safe)
+        this.id = id;
+    }
+
+    public Integer getLimitExceededBy() {
+        return limitExceededBy;
+    }
+
     public void setLimitExceededBy(Integer limitExceededBy) {
         this.limitExceededBy = limitExceededBy;
     }
 
-    public String getMessage() { return message; }
-    public void setMessage(String message) { this.message = message; }
+    public String getMessage() {
+        return message;
+    }
 
-    public ApiKey getApiKey() { return apiKey; }
-    public void setApiKey(ApiKey apiKey) { this.apiKey = apiKey; }
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public ApiKey getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(ApiKey apiKey) {
+        this.apiKey = apiKey;
+    }
 }
