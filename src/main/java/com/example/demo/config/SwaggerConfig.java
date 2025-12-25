@@ -19,7 +19,7 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
 
         Server server = new Server();
-        server.setUrl("http://localhost:9001");
+        server.setUrl("https://9219.pro604cr.amypo.ai");
 
         return new OpenAPI()
                 .info(new Info()
