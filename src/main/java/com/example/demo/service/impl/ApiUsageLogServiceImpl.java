@@ -1,67 +1,53 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.ApiUsageLogDto;
-import com.example.demo.entity.ApiKey;
 import com.example.demo.entity.ApiUsageLog;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.ApiKeyRepository;
 import com.example.demo.repository.ApiUsageLogRepository;
 import com.example.demo.service.ApiUsageLogService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
+import java.time.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Service
 public class ApiUsageLogServiceImpl implements ApiUsageLogService {
 
-    @Autowired
-    private ApiUsageLogRepository logRepo;
+    private final ApiUsageLogRepository repo;
+    private final ApiKeyRepository keyRepo;
 
-    @Autowired
-    private ApiKeyRepository apiKeyRepo;
-
-    @Override
-    public ApiUsageLogDto logUsage(ApiUsageLogDto dto) {
-        ApiKey key = apiKeyRepo.findById(dto.getApiKeyId()).orElseThrow();
-
-        ApiUsageLog log = new ApiUsageLog();
-        log.setApiKey(key);
-        log.setEndpoint(dto.getEndpoint());
-        log.setTimestamp(new Timestamp(System.currentTimeMillis()));
-
-        return convert(logRepo.save(log));
+    public ApiUsageLogServiceImpl(ApiUsageLogRepository repo, ApiKeyRepository keyRepo) {
+        this.repo = repo;
+        this.keyRepo = keyRepo;
     }
 
     @Override
-    public List<ApiUsageLogDto> getUsageForApiKey(Long apiKeyId) {
-        return logRepo.findByApiKeyId(apiKeyId)
-                .stream().map(this::convert).collect(Collectors.toList());
+    public ApiUsageLog logUsage(ApiUsageLog log) {
+        if (log.getTimestamp().isAfter(Instant.now())) {
+            throw new BadRequestException("Future timestamp");
+        }
+
+        keyRepo.findById(log.getApiKey().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("ApiKey not found"));
+
+        return repo.save(log);
     }
 
     @Override
-    public List<ApiUsageLogDto> getUsageForToday(Long apiKeyId) {
-        Timestamp start = Timestamp.valueOf(LocalDate.now().atStartOfDay());
-        Timestamp end = Timestamp.valueOf(LocalDate.now().plusDays(1).atStartOfDay());
-        return logRepo.findByApiKeyIdAndTimestampBetween(apiKeyId, start, end)
-                .stream().map(this::convert).collect(Collectors.toList());
+    public List<ApiUsageLog> getUsageForApiKey(Long keyId) {
+        return repo.findByApiKey_Id(keyId);
     }
 
     @Override
-    public long countRequestsToday(Long apiKeyId) {
-        Timestamp start = Timestamp.valueOf(LocalDate.now().atStartOfDay());
-        Timestamp end = Timestamp.valueOf(LocalDate.now().plusDays(1).atStartOfDay());
-        return logRepo.countByApiKeyIdAndTimestampBetween(apiKeyId, start, end);
+    public List<ApiUsageLog> getUsageForToday(Long keyId) {
+        Instant start = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant end = start.plus(Duration.ofDays(1));
+        return repo.findForKeyBetween(keyId, start, end);
     }
 
-    private ApiUsageLogDto convert(ApiUsageLog log) {
-        ApiUsageLogDto dto = new ApiUsageLogDto();
-        dto.setId(log.getId());
-        dto.setApiKeyId(log.getApiKey().getId());
-        dto.setEndpoint(log.getEndpoint());
-        dto.setTimestamp(log.getTimestamp());
-        return dto;
+    @Override
+    public int countRequestsToday(Long keyId) {
+        Instant start = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant end = start.plus(Duration.ofDays(1));
+        return repo.countForKeyBetween(keyId, start, end);
     }
 }
