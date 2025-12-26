@@ -1,59 +1,60 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.*;
-import com.example.demo.entity.UserAccount;
+import com.example.demo.entity.KeyExemption;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.repository.UserAccountRepository;
-import com.example.demo.security.JwtUtil;
-import com.example.demo.service.AuthService;
+import com.example.demo.repository.ApiKeyRepository;
+import com.example.demo.repository.KeyExemptionRepository;
+import com.example.demo.service.KeyExemptionService;
 import org.springframework.stereotype.Service;
 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.Map;
+import java.time.Instant;
+import java.util.List;
 @Service
-public class AuthServiceImpl implements AuthService {
+public class KeyExemptionServiceImpl implements KeyExemptionService {
 
-    private final UserAccountRepository repo;
-    private final PasswordEncoder encoder;
-    private final AuthenticationManager authManager;
-    private final JwtUtil jwtUtil;
+    private final KeyExemptionRepository repo;
+    private final ApiKeyRepository keyRepo;
 
-    public AuthServiceImpl(UserAccountRepository repo,
-                           PasswordEncoder encoder,
-                           AuthenticationManager authManager,
-                           JwtUtil jwtUtil) {
+    public KeyExemptionServiceImpl(KeyExemptionRepository repo, ApiKeyRepository keyRepo) {
         this.repo = repo;
-        this.encoder = encoder;
-        this.authManager = authManager;
-        this.jwtUtil = jwtUtil;
+        this.keyRepo = keyRepo;
     }
 
     @Override
-    public AuthResponseDto register(RegisterRequestDto r) {
-        if (repo.existsByEmail(r.getEmail())) {
-            throw new BadRequestException("Email already exists");
+    public KeyExemption createExemption(KeyExemption e) {
+        if (e.getTemporaryExtensionLimit() < 0) {
+            throw new BadRequestException("Invalid extension limit");
+        }
+        if (e.getValidUntil() != null && e.getValidUntil().isBefore(Instant.now())) {
+            throw new BadRequestException("Invalid expiry");
         }
 
-        UserAccount user = new UserAccount();
-        user.setEmail(r.getEmail());
-        user.setPassword(encoder.encode(r.getPassword()));
-        user.setRole(r.getRole());
+        keyRepo.findById(e.getApiKey().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("ApiKey not found"));
 
-        repo.save(user);
-
-        String token = jwtUtil.generateToken(Map.of(), user.getEmail());
-        return new AuthResponseDto(token, user.getId(), user.getEmail(), user.getRole());
+        return repo.save(e);
     }
 
     @Override
-    public AuthResponseDto login(AuthRequestDto r) {
-        UserAccount user = repo.findByEmail(r.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    public KeyExemption updateExemption(Long id, KeyExemption e) {
+        KeyExemption existing = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Exemption not found"));
 
-        String token = jwtUtil.generateToken(Map.of(), user.getEmail());
-        return new AuthResponseDto(token, user.getId(), user.getEmail(), user.getRole());
+        existing.setTemporaryExtensionLimit(e.getTemporaryExtensionLimit());
+        existing.setValidUntil(e.getValidUntil());
+
+        return repo.save(existing);
+    }
+
+    @Override
+    public KeyExemption getExemptionByKey(Long apiKeyId) {
+        return repo.findByApiKey_Id(apiKeyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Exemption not found"));
+    }
+
+    @Override
+    public List<KeyExemption> getAllExemptions() {
+        return repo.findAll();
     }
 }
